@@ -1,0 +1,21 @@
+{
+  "name": "google-maps-review-scraper",
+  "version": "1.0.0",
+  "description": "A review scraper made for google maps",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/YasogaN/google-maps-review-scraper"
+  },
+  "author": "YasogaN",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.7.3",
+    "hex2dec": "^1.1.2"
+  }
+}
