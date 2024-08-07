@@ -24,3 +24,6 @@ web_modules/
 
 # vscode
 .vscode
+
+#github 
+.github
