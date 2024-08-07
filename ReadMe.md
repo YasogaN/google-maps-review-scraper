@@ -3,14 +3,11 @@
 <div align="center">
 
 ![](https://img.shields.io/github/license/YasogaN/google-maps-review-scraper.svg?style=for-the-badge&color=blue) 
-![](https://img.shields.io/github/release/YasogaN/google-maps-review-scraper.svg?style=for-the-badge) 
-![](https://img.shields.io/github/downloads/YasogaN/google-maps-review-scraper/total.svg?style=for-the-badge) 
 ![](https://img.shields.io/github/forks/YasogaN/google-maps-review-scraper.svg?style=for-the-badge) 
 ![](https://img.shields.io/github/stars/YasogaN/google-maps-review-scraper.svg?style=for-the-badge) 
 ![](https://img.shields.io/github/watchers/YasogaN/google-maps-review-scraper.svg?style=for-the-badge) 
 ![](https://img.shields.io/github/issues/YasogaN/google-maps-review-scraper.svg?style=for-the-badge) 
 ![](https://img.shields.io/github/languages/code-size/YasogaN/google-maps-review-scraper?style=for-the-badge) 
-[![](https://img.shields.io/coveralls/YasogaN/google-maps-review-scraper.svg?style=for-the-badge)](https://coveralls.io/github/YasogaN/google-maps-review-scraper)
 
 
 ## Frameworks/Technologies
