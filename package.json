@@ -11,6 +11,7 @@
     "type": "git",
     "url": "github.com/YasogaN/google-maps-review-scraper"
   },
+  "homepage": "github.com/YasogaN/google-maps-review-scraper",
   "author": "YasogaN",
   "license": "AGPL-3.0-only",
   "dependencies": {
