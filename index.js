@@ -26,6 +26,9 @@ export async function scraper(url, sort_type, search_query = "") {
 
         //Get the reviews
         var response = await axios.get(newurl);
+        if (response.status !== 200) {
+            throw new Error(`Failed to fetch reviews: ${response.status}`);
+        }
         var data = response.data.split(")]}'")[1];
         var json = JSON.parse(data);
         //console.debug(json);
@@ -58,6 +61,9 @@ export async function scraper(url, sort_type, search_query = "") {
 
             //Get the reviews
             var response = await axios.get(newurl);
+            if (response.status !== 200) {
+                throw new Error(`Failed to fetch reviews: ${response.status}`);
+            }
             var data = response.data.split(")]}'")[1];
             var json = JSON.parse(data);
             //console.debug(json);
