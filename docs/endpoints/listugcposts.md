@@ -20,7 +20,7 @@ https://www.google.com/maps/rpc/listugcposts
 
 1. `1m7` - message (7 blocks)
 
-    1. `1s` - string: `Hex String 1` and `Hex String 2` from the [place url](../urls/place.md#protcol-buffer-data-breakdown) sperated by a colon (`:`)
+    1. `1s` - string: `Hex String 1` and `Hex String 2` from the [place url](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md#protcol-buffer-data-breakdown) sperated by a colon (`:`)
 
     2. `3s` - string: Search Query
 
@@ -57,9 +57,9 @@ https://www.google.com/maps/rpc/listugcposts
         6. `13m1` - message (1 block)
             1. `1e2` - enum: Sorting of results [^5]
 
-[^1]: This message block seams to be a CSRF Token accompanied by a enumarative field. However any changes would result in a `400` Bad Request. It was also present in [listentitiesreviews](./listentitiesreviews.md) endpoint.
+[^1]: This message block seams to be a CSRF Token accompanied by a enumarative field. However any changes would result in a `400` Bad Request. It was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint.
 
-[^2]: This message block was also present in [listentitiesreviews](./listentitiesreviews.md) endpoint. As usual, 1 stands for true and 0 stands for false after the letter b.
+[^2]: This message block was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint. As usual, 1 stands for true and 0 stands for false after the letter b.
 
 [^3]: Page numbers from 1-85 can be found at: [pgnum](/pgnum). However, it also includes a second a page number (which is different from [pgnum](/pgnum)), which is located at the second line of the json response.
 

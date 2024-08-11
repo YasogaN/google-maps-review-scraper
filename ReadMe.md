@@ -41,7 +41,7 @@ const reviews = await scraper("url", "sort_type", "search_query")
 ```
 
 ### Arguments
-`url` - `string`: A google maps place url as explained [here](./docs/urls/place.md) 
+`url` - `string`: A google maps place url as explained [here](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md) 
 
 `sort_type` - `string`: The sort parameter (`"relevent"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`).
 
@@ -55,13 +55,13 @@ const reviews = await scraper("url", "sort_type", "search_query")
 
 ## Documentation of API's/URL's used
 
-All documentation related to API's and URL's used in this project can be found in the [docs](./docs/) folder divided into endpoints for API's and urls for URL's. Note that everything included here was based on my reasearch, so errors could be present. A pull request is always welcome (see [contributing](#contributing))
+All documentation related to API's and URL's used in this project can be found in the [docs](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/) folder divided into endpoints for API's and urls for URL's. Note that everything included here was based on my reasearch, so errors could be present. A pull request is always welcome (see [contributing](#contributing))
 
 ---
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 only - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the GNU Affero General Public License v3.0 only - see the [LICENSE](https://github.com/YasogaN/google-maps-review-scraper/blob/main/LICENSE) file for details.
 
 ### Summary of AGPL-3.0-only
 
@@ -87,13 +87,13 @@ For more detailed information, please refer to the [AGPL-3.0 license text](https
 
 ## Contributing
 
-I welcome contributions from the community! Please see our [CONTRIBUTING.md](./CONTRIBUTING.md) for details on how to contribute to this project.
+I welcome contributions from the community! Please see our [CONTRIBUTING.md](https://github.com/YasogaN/google-maps-review-scraper/blob/main/CONTRIBUTING.md) for details on how to contribute to this project.
 
 ---
 
 ## Code of Conduct
 
-Please note that this project is governed by a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+Please note that this project is governed by a [Code of Conduct](https://github.com/YasogaN/google-maps-review-scraper/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ---
 
