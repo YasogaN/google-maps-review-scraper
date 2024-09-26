@@ -18,6 +18,11 @@ export async function scraper(url, sort_type, search_query = "") {
             throw new Error(`Invalid sort value: ${sort_type}`);
         }
 
+        // Check if the URL is valid
+        if (!url.includes("https://www.google.com/maps/place/")) {
+            throw new Error(`Invalid URL: ${url}`);
+        }
+
         //Create the URL
         var newurl = await listugcposts(url, sort, "", search_query);
 
