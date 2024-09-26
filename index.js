@@ -1,5 +1,4 @@
 import { SortEnum } from "./src/types.js";
-import listenentities from "./src/listenentities.js";
 import listugcposts from "./src/listugcposts.js";
 import axios from "axios";
 
