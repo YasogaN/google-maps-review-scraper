@@ -61,27 +61,28 @@ All documentation related to API's and URL's used in this project can be found i
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 only - see the [LICENSE](https://github.com/YasogaN/google-maps-review-scraper/blob/main/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/YasogaN/google-maps-review-scraper/blob/main/LICENSE) file for details.
 
-### Summary of AGPL-3.0-only
 
-The GNU Affero General Public License (AGPL) is a free, copyleft license for software and other kinds of works, specifically designed to ensure cooperation with the community in the case of network server software.
+### Summary of the MIT License
 
-### Key Permissions and Conditions:
+The **MIT License** is a permissive open-source license that allows users significant freedom with minimal conditions.
 
-- **Freedom to use**: You may use the software for any purpose.
-- **Freedom to study**: You have the freedom to study how the software works and make changes to it.
-- **Freedom to share**: You can redistribute copies of the original software.
-- **Freedom to contribute**: You must release the source code of your version and your modifications to others when you distribute the software or if you operate it as a service over a network.
-- **No additional restrictions**: You cannot impose additional restrictions on the rights granted by the license.
+### Key Permissions:
 
-### Requirements:
+1. **Freedom to Use**: You can use the software for any purpose, including commercial use.
+2. **Freedom to Modify**: You are free to modify the software as needed.
+3. **Freedom to Distribute**: You can distribute copies of the software, whether in its original or modified form.
+4. **Freedom to Sell**: You can sublicense, distribute, and even sell the software.
 
-1. **Source Code Availability**: You must provide access to the source code of your modifications when you distribute the software.
-2. **Network Use Disclosure**: If you make the software available over a network, you must also provide the source code to users interacting with it remotely.
-3. **No Warranty**: The software is provided "as is", without warranty of any kind.
+### Key Conditions:
 
-For more detailed information, please refer to the [AGPL-3.0 license text](https://www.gnu.org/licenses/agpl-3.0.en.html).
+- **Attribution**: You must include the original copyright notice and the MIT license text in any copies or substantial portions of the software.
+
+### No Warranty:
+- The software is provided "as is," with no warranties or guarantees. The author is not liable for any damages arising from the use of the software.
+
+For full details, refer to the license text.
 
 ---
 
