@@ -17,5 +17,11 @@
   "dependencies": {
     "axios": "^1.7.4",
     "hex2dec": "^1.1.2"
-  }
+  },
+  "files": [
+    "index.js",
+    "src/",
+    "ReadMe.md",
+    "LICENSE"
+  ]
 }
