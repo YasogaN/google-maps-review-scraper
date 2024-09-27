@@ -13,7 +13,8 @@
 ## Frameworks/Technologies
 
 ![](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white) 
-![](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)
+[![axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)](https://www.npmjs.com/package/axios)
+[![hex2dec](https://img.shields.io/badge/hex2dec-blue?&style=for-the-badge)](https://www.npmjs.com/package/hex2dec)
 
 </div>
 
@@ -37,7 +38,7 @@ Install with yarn
 ```ts
 import { scraper } from "google-maps-review-scraper"
 
-const reviews = await scraper("url", "sort_type", "search_query")
+const reviews = await scraper("url", { sort_type: "sort_type", search_query: "search_query", pages: "pages" })
 ```
 
 ### Arguments
@@ -45,11 +46,16 @@ const reviews = await scraper("url", "sort_type", "search_query")
 
 `sort_type` - `string`: The sort parameter (`"relevent"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`).
 
-`search_query` - `string`: Search query to search in reviews (optional)
+`search_query` - `string`: Search query to search in reviews.
+
+`pages` - `integer`: Number of pages that will be scraped. Will return less reviews if no more reviews exist.
+
+> [!NOTE]
+> `sort_type`, `search_query` and `pages` are all optional paremeters which should be included within the object literals (the curly brackets).
 
 ### Returns
 
-`reviews` - `Promise<JSON>`: A promise that resolves to a JSON object containing the reviews.
+`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews or the number `0` if no reivews exist.
 
 ---
 
@@ -101,6 +107,11 @@ Please note that this project is governed by a [Code of Conduct](https://github.
 ## Acknowledgements
 
 Special thanks to [@marin-m](https://github.com/marin-m) for his outstanding work on the [pbtk](https://github.com/marin-m/pbtk) repository. His contributions and insights on protocol buffers were invaluable in my research and development process.
+
+### Dependencies
+
+ - [hex2dec](https://npm.im/hex2dec) by [@donmccurdy](https://github.com/donmccurdy)
+ - [axios](https://npm.im/axios) by [@mzabriskie](https://github.com/mzabriskie) and [collaborators](https://github.com/axios/axios/graphs/contributors)
 
 ---
 

@@ -4,13 +4,17 @@ import axios from "axios";
 
 
 /**
- * This function retrieves the reviews from the specified URL
- * @param {string} url - Google Maps place url.
- * @param {SortEnum} sort - The sort parameter ("relevent", "newest", "highest_rating", "lowest_rating").
- * @param {string} [search_query=""] - Search query to search in reviews (optional)
- * @returns {Promise<JSON>} A promise that resolves to a JSON object containing the reviews.
+ * Scrapes reviews from a given Google Maps URL.
+ *
+ * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {Object} options - The options for scraping.
+ * @param {string} [options.sort_type="relevent"] - The type of sorting for the reviews ("relevent", "newest", "highest_rating", "lowest_rating").
+ * @param {string} [options.search_query=""] - The search query to filter reviews.
+ * @param {string} [options.pages="max"] - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
+ * @returns {Promise<Array|number>} - Returns an array of reviews or 0 if no reviews are found.
+ * @throws {Error} - Throws an error if the URL is not provided or if fetching reviews fails.
  */
-export async function scraper(url, sort_type, search_query = "") {
+export async function scraper(url, { sort_type = "relevent", search_query = "", pages = "max" }) {
     try {
         // Check if the sort parameter is valid
         const sort = SortEnum[sort_type];
@@ -21,6 +25,11 @@ export async function scraper(url, sort_type, search_query = "") {
         // Check if the URL is valid
         if (!url.includes("https://www.google.com/maps/place/")) {
             throw new Error(`Invalid URL: ${url}`);
+        }
+
+        // Check if the pages parameter is valid
+        if (pages !== "max" && isNaN(pages)) {
+            throw new Error(`Invalid pages value: ${pages}`);
         }
 
         //Create the URL
@@ -43,15 +52,18 @@ export async function scraper(url, sort_type, search_query = "") {
         var reviews = json[2];
 
         //Check if there are any reviews on nextpage
-        if (json[1] == null) {
+        if (json[1] == null || pages === 1) {
             return reviews; //Return the reviews if there are no more pages
         }
 
         //Get the next page
         var nextpage = json[1].replace(/"/g, "");
 
+        var currentPage = 2;
+
         //Get the reviews on all the next pages until there are no more
-        while (nextpage && nextpage !== "null") {
+        while ((nextpage && nextpage !== "null") || pages === currentPage) {
+            console.log("Scraping page " + currentPage + "..." + " Next page: " + nextpage);
             //Create the URL
             var newurl = await listugcposts(url, sort, nextpage, search_query);
 
@@ -66,14 +78,17 @@ export async function scraper(url, sort_type, search_query = "") {
             //Store the reviews in the reviews array
             var reviews = reviews.concat(json[2]);
 
-            //Check if there are any reviews on nextpage
-            if (json[1] == null) {
+            //Check if there are any reviews on nextpage or the currentPage equals the number of pages requested
+            if (json[1] == null || (pages !== "max" && parseInt(pages) === currentPage)) {
                 return reviews;
             }
             var nextpage = json[1].replace(/"/g, "");
 
             // Sleep for 1 second
             await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Increment the current page
+            currentPage++;
         }
     } catch (e) {
         console.error(e);
