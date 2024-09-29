@@ -55,7 +55,7 @@ const reviews = await scraper("url", { sort_type: "sort_type", search_query: "se
 
 ### Returns
 
-`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews or the number `0` if no reivews exist.
+`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews in this [format](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/output.md) or the number `0` if no reivews exist.
 
 ---
 
