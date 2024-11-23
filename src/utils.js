@@ -1,6 +1,7 @@
 import listugcposts from "./listugcposts.js";
 import axios from "axios";
 import { SortEnum } from "./types.js";
+import { URL } from 'url';
 
 /**
  * Helper function that validates the parameters for the Google Maps review scraper.
@@ -13,7 +14,8 @@ import { SortEnum } from "./types.js";
  * @throws {Error} Throws an error if the pages value is invalid.
  */
 export function validateParams(url, sort_type, pages) {
-    if (!url.includes("https://www.google.com/maps/place/")) {
+    const parsedUrl = new URL(url);
+    if (parsedUrl.host !== "www.google.com" || !parsedUrl.pathname.startsWith("/maps/place/")) {
         throw new Error(`Invalid URL: ${url}`);
     }
     if (!SortEnum[sort_type]) {
