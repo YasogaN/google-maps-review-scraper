@@ -2,6 +2,7 @@ import listugcposts from "./listugcposts.js";
 import axios from "axios";
 import { SortEnum } from "./types.js";
 import { URL } from 'url';
+import parser from "./parser.js";
 
 /**
  * Helper function that validates the parameters for the Google Maps review scraper.
@@ -60,7 +61,7 @@ export async function fetchReviews(url, sort, nextPage = "", search_query = "") 
  * @param {Array} initialData - The initial data containing reviews and the next page token.
  * @returns {Promise<Array>} - A promise that resolves to an array of reviews.
  */
-export async function paginateReviews(url, sort, pages, search_query, initialData) {
+export async function paginateReviews(url, sort, pages, search_query, clean, initialData) {
     let reviews = initialData[2];
     let nextPage = initialData[1]?.replace(/"/g, "");
     let currentPage = 2;
@@ -75,5 +76,5 @@ export async function paginateReviews(url, sort, pages, search_query, initialDat
         currentPage++;
     }
 
-    return reviews;
+    return clean ? await parser(reviews) : reviews;
 }
