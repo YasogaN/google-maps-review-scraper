@@ -12,7 +12,7 @@ import { validateParams, fetchReviews } from "./src/utils.js";
  * @returns {Promise<Array|number>} - Returns an array of reviews or 0 if no reviews are found.
  * @throws {Error} - Throws an error if the URL is not provided or if fetching reviews fails.
  */
-export async function scraper(url, { sort_type = "relevent", search_query = "", pages = "max" }) {
+export async function scraper(url, { sort_type = "relevent", search_query = "", pages = "max" } = {}) {
     try {
         validateParams(url, sort_type, pages);
 
