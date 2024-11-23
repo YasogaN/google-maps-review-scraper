@@ -9,11 +9,12 @@ import { URL } from 'url';
  * @param {string} url - The URL to validate. Must include "https://www.google.com/maps/place/".
  * @param {string} sort_type - The sort type to validate. Must be a valid key in SortEnum.
  * @param {string|number} pages - The number of pages to validate. Must be "max" or a number.
+ * @param {boolean} clean - The clean option to validate. Must be a boolean.
  * @throws {Error} Throws an error if the URL is invalid.
  * @throws {Error} Throws an error if the sort type is invalid.
  * @throws {Error} Throws an error if the pages value is invalid.
  */
-export function validateParams(url, sort_type, pages) {
+export function validateParams(url, sort_type, pages, clean) {
     const parsedUrl = new URL(url);
     if (parsedUrl.host !== "www.google.com" || !parsedUrl.pathname.startsWith("/maps/place/")) {
         throw new Error(`Invalid URL: ${url}`);
@@ -23,6 +24,9 @@ export function validateParams(url, sort_type, pages) {
     }
     if (pages !== "max" && isNaN(pages)) {
         throw new Error(`Invalid pages value: ${pages}`);
+    }
+    if (typeof clean !== "boolean") {
+        throw new Error(`Invalid value for clean value: ${clean}`);
     }
 }
 
