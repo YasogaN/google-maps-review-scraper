@@ -27,3 +27,6 @@ web_modules/
 
 #github 
 .github
+
+#tests
+test.js
