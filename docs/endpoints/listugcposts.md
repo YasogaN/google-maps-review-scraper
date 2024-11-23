@@ -61,7 +61,7 @@ https://www.google.com/maps/rpc/listugcposts
 
 [^2]: This message block was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint. As usual, 1 stands for true and 0 stands for false after the letter b.
 
-[^3]: Page numbers from 1-85 can be found at: [pgnum](/pgnum). However, it also includes a second a page number (which is different from [pgnum](/pgnum)), which is located at the second line of the json response.
+[^3]: Page numbers from 1-85 can be found at: [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum). However, it also includes a second a page number (which is different from [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum)), which is located at the second line of the json response.
 
 [^4]: The string is an empty element when requesting for the first page of reviews.
 
