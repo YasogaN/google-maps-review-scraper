@@ -1,7 +1,5 @@
 import { SortEnum } from "./src/types.js";
-import listugcposts from "./src/listugcposts.js";
-import axios from "axios";
-
+import { validateParams, fetchReviews } from "./src/utils.js";
 
 /**
  * Scrapes reviews from a given Google Maps URL.
@@ -16,80 +14,16 @@ import axios from "axios";
  */
 export async function scraper(url, { sort_type = "relevent", search_query = "", pages = "max" }) {
     try {
-        // Check if the sort parameter is valid
+        validateParams(url, sort_type, pages);
+
         const sort = SortEnum[sort_type];
-        if (sort === undefined) {
-            throw new Error(`Invalid sort value: ${sort_type}`);
-        }
+        const initialData = await fetchReviews(url, sort, "", search_query);
 
-        // Check if the URL is valid
-        if (!url.includes("https://www.google.com/maps/place/")) {
-            throw new Error(`Invalid URL: ${url}`);
-        }
+        if (!initialData || !initialData[2].length) return 0;
 
-        // Check if the pages parameter is valid
-        if (pages !== "max" && isNaN(pages)) {
-            throw new Error(`Invalid pages value: ${pages}`);
-        }
+        if (!initialData[1] || pages === 1) return initialData[2];
 
-        //Create the URL
-        var newurl = await listugcposts(url, sort, "", search_query);
-
-        //Get the reviews
-        var response = await axios.get(newurl);
-        if (response.status !== 200) {
-            throw new Error(`Failed to fetch reviews: ${response.status}`);
-        }
-        var data = response.data.split(")]}'")[1];
-        var json = JSON.parse(data);
-
-        //Check if there are any reviews
-        if (!json || json.length == 0) {
-            return 0;
-        }
-
-        //Store the reviews in the reviews array
-        var reviews = json[2];
-
-        //Check if there are any reviews on nextpage
-        if (json[1] == null || pages === 1) {
-            return reviews; //Return the reviews if there are no more pages
-        }
-
-        //Get the next page
-        var nextpage = json[1].replace(/"/g, "");
-
-        var currentPage = 2;
-
-        //Get the reviews on all the next pages until there are no more
-        while ((nextpage && nextpage !== "null") || pages === currentPage) {
-            console.log("Scraping page " + currentPage + "..." + " Next page: " + nextpage);
-            //Create the URL
-            var newurl = await listugcposts(url, sort, nextpage, search_query);
-
-            //Get the reviews
-            var response = await axios.get(newurl);
-            if (response.status !== 200) {
-                throw new Error(`Failed to fetch reviews: ${response.status}`);
-            }
-            var data = response.data.split(")]}'")[1];
-            var json = JSON.parse(data);
-
-            //Store the reviews in the reviews array
-            var reviews = reviews.concat(json[2]);
-
-            //Check if there are any reviews on nextpage or the currentPage equals the number of pages requested
-            if (json[1] == null || (pages !== "max" && parseInt(pages) === currentPage)) {
-                return reviews;
-            }
-            var nextpage = json[1].replace(/"/g, "");
-
-            // Sleep for 1 second
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Increment the current page
-            currentPage++;
-        }
+        return await paginateReviews(url, sort, pages, search_query, initialData);
     } catch (e) {
         console.error(e);
         return;
