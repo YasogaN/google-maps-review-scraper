@@ -39,7 +39,7 @@ https://www.google.com/maps/preview/review/listentitiesreviews
     2. `7e` - enum: 81
 
 
-[^1]: Page numbers from 1-85 can be found at: [pgnum](/pgnum)
+[^1]: Page numbers from 1-85 can be found at: [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum)
 
 [^2]:This message block was also present in [listugcposts](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listugcposts.md) endpoint. I couldnt find what the boolean fields meant as the api did not respond to changes made in these fields. If anyone has any idea what the following means, a pull request or issue would be welcome.
 
