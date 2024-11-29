@@ -38,24 +38,26 @@ Install with yarn
 ```ts
 import { scraper } from "google-maps-review-scraper"
 
-const reviews = await scraper("url", { sort_type: "sort_type", search_query: "search_query", pages: "pages" })
+const reviews = await scraper("url", { sort_type: "sort_type", search_query: "search_query", pages: "pages", clean: false })
 ```
 
 ### Arguments
 `url` - `string`: A google maps place url as explained [here](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md) 
 
-`sort_type` - `string`: The sort parameter (`"relevent"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`).
+`sort_type` - `string`: The sort parameter (`"relevent"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`). Defaults to `"relevent"`
 
-`search_query` - `string`: Search query to search in reviews.
+`search_query` - `string`: Search query to search in reviews. Defaults to nothing.
 
-`pages` - `integer`: Number of pages that will be scraped. Will return less reviews if no more reviews exist.
+`pages` - `integer`: Number of pages that will be scraped. Will return less reviews if no more reviews exist. Defaults to max pages.
+
+`clean` - `boolean`: Whether to return a cleaned output or not. Defaults to false.
 
 > [!NOTE]
 > `sort_type`, `search_query` and `pages` are all optional paremeters which should be included within the object literals (the curly brackets).
 
 ### Returns
 
-`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews in this [format](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/output.md) or the number `0` if no reivews exist.
+`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews in these [formats](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/outputs/output.md) depending on the value of `clean` or the number `0` if no reivews exist.
 
 ---
 
