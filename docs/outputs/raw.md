@@ -1,4 +1,4 @@
-# Structure of the output
+# Structure of raw output
 
 The output is an array of Review Objects.
 
@@ -742,11 +742,10 @@ If you find any mismatches, irregularities, or other issues with the API documen
 You can submit an issue by clicking the "New Issue" button in the repository's [Issues tab](https://github.com/YasogaN/google-maps-review-scraper/issues).
 
 When submitting an issue, kindly include the following details:
-
-    + A clear description of the problem.
-    + The url of the google maps place.
-    + Steps to reproduce the issue.
-    + Any relevant logs, error messages, or screenshots (if applicable).
++ A clear description of the problem.
++ The url of the google maps place.
++ Steps to reproduce the issue.
++ Any relevant logs, error messages, or screenshots (if applicable).
 
 [^1]: `HexString2` is can be identified to be `HexString2` from the [place url](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md#protcol-buffer-data-breakdown)
 [^2]: Number of pictures might not return the same number in the contributors profile.
