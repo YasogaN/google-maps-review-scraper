@@ -1,5 +1,6 @@
 import { SortEnum } from "./src/types.js";
 import { validateParams, fetchReviews } from "./src/utils.js";
+import parseReviews from "./src/parser.js";
 
 /**
  * Scrapes reviews from a given Google Maps URL.
@@ -22,7 +23,7 @@ export async function scraper(url, { sort_type = "relevent", search_query = "", 
 
         if (!initialData || !initialData[2].length) return 0;
 
-        if (!initialData[1] || pages === 1) return initialData[2];
+        if (!initialData[1] || pages === 1) return clean ? parseReviews(initialData[2]) : initialData[2];
 
         return await paginateReviews(url, sort, pages, search_query, clean, initialData);
     } catch (e) {
