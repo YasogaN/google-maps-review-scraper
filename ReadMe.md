@@ -12,8 +12,7 @@
 
 ## Frameworks/Technologies
 
-![](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white) 
-[![axios](https://img.shields.io/badge/axios-671ddf?&style=for-the-badge&logo=axios&logoColor=white)](https://www.npmjs.com/package/axios)
+![](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
 [![hex2dec](https://img.shields.io/badge/hex2dec-blue?&style=for-the-badge)](https://www.npmjs.com/package/hex2dec)
 
 </div>
@@ -113,7 +112,6 @@ Special thanks to [@marin-m](https://github.com/marin-m) for his outstanding wor
 ### Dependencies
 
  - [hex2dec](https://npm.im/hex2dec) by [@donmccurdy](https://github.com/donmccurdy)
- - [axios](https://npm.im/axios) by [@mzabriskie](https://github.com/mzabriskie) and [collaborators](https://github.com/axios/axios/graphs/contributors)
 
 ---
 
