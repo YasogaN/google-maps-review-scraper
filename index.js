@@ -1,5 +1,5 @@
 import { SortEnum } from "./src/types.js";
-import { validateParams, fetchReviews } from "./src/utils.js";
+import { validateParams, fetchReviews, paginateReviews } from "./src/utils.js";
 import parseReviews from "./src/parser.js";
 
 /**
