@@ -1,5 +1,4 @@
 import listugcposts from "./listugcposts.js";
-import axios from "axios";
 import { SortEnum } from "./types.js";
 import { URL } from "url";
 import parser from "./parser.js";
@@ -40,14 +39,16 @@ export function validateParams(url, sort_type, pages, clean) {
  * @throws {Error} If the request fails or the response is invalid.
  */
 export async function fetchReviews(url, sort, nextPage = "", search_query = "") {
-    const apiUrl = await listugcposts(url, sort, nextPage, search_query);
-    const response = await axios.get(apiUrl);
-    if (response.status !== 200) {
-        throw new Error(`Failed to fetch reviews: ${response.status}`);
+    const apiUrl = listugcposts(url, sort, nextPage, search_query);
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch reviews: ${response.statusText}`);
     }
-    const rawData = response.data.split(")]}'")[1];
+    const textData = await response.text();
+    const rawData = textData.split(")]}'")[1];
     return JSON.parse(rawData);
 }
+
 
 /**
  * Paginates through reviews from a given URL.
