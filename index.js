@@ -21,7 +21,7 @@ export async function scraper(url, { sort_type = "relevent", search_query = "", 
         const sort = SortEnum[sort_type];
         const initialData = await fetchReviews(url, sort, "", search_query);
 
-        if (!initialData || !initialData[2].length) return 0;
+        if (!initialData || !initialData[2] || !initialData[2].length) return 0;
 
         if (!initialData[1] || pages === 1) return clean ? parseReviews(initialData[2]) : initialData[2];
 
