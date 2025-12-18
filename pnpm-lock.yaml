@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      hex2dec:
+        specifier: ^1.1.2
+        version: 1.1.2
+
+packages:
+
+  hex2dec@1.1.2:
+    resolution: {integrity: sha512-Yu+q/XWr2fFQ11tHxPq4p4EiNkb2y+lAacJNhAdRXVfRIcDH6gi7htWFnnlIzvqHMHoWeIsfXlNAjZInpAOJDA==}
+
+snapshots:
+
+  hex2dec@1.1.2: {}
