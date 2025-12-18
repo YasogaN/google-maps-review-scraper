@@ -2,10 +2,12 @@
   "name": "google-maps-review-scraper",
   "version": "1.5.0",
   "description": "A review scraper made for google maps",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rimraf dist && tsc",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -22,5 +24,11 @@
     "src/",
     "ReadMe.md",
     "LICENSE"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "rimraf": "^6.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
 }
