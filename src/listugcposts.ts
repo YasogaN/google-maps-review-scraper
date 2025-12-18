@@ -7,9 +7,9 @@
  * @returns {string} URL to fetch reviews.
  * @throws Will throw an error if the URL is invalid.
  */
-export default function (url, so, pg = "", sq = "") {
+export default function (url: string, so: 1 | 2 | 3 | 4, pg = "", sq = "") {
     const m = [...url.matchAll(/!1s([a-zA-Z0-9_:]+)!/g)];
-    if (!m || !m[0][1]) {
+    if (!m || !m[0] || !m[0][1]) {
         throw new Error("Invalid URL");
     }
     const placeId = m[1]?.[1] ? m[1][1] : m[0][1];

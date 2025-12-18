@@ -1,6 +1,6 @@
-import { SortEnum } from "./src/types.js";
-import { validateParams, fetchReviews, paginateReviews } from "./src/utils.js";
-import parseReviews from "./src/parser.js";
+import { SortEnum } from "./types.js";
+import { validateParams, fetchReviews, paginateReviews } from "./utils.js";
+import parseReviews from "./parser.js";
 
 /**
  * Scrapes reviews from a given Google Maps URL.
@@ -14,20 +14,30 @@ import parseReviews from "./src/parser.js";
  * @returns {Promise<Array|number>} - Returns an array of reviews or 0 if no reviews are found.
  * @throws {Error} - Throws an error if the URL is not provided or if fetching reviews fails.
  */
-export async function scraper(url, { sort_type = "relevent", search_query = "", pages = "max", clean = false } = {}) {
+export async function scraper(
+    url: string,
+    { sort_type = "relevent", search_query = "", pages = "max", clean = false } = {}
+) {
     try {
         validateParams(url, sort_type, pages, clean);
 
-        const sort = SortEnum[sort_type];
-        const initialData = await fetchReviews(url, sort, "", search_query);
+        const sortValue = SortEnum[sort_type as keyof typeof SortEnum] as 1 | 2 | 3 | 4;
 
-        if (!initialData || !initialData[2] || !initialData[2].length) return 0;
+        const initialData = await fetchReviews(url, sortValue, "", search_query);
 
-        if (!initialData[1] || pages === 1) return clean ? parseReviews(initialData[2]) : initialData[2];
+        if (!initialData || !Array.isArray(initialData[2]) || initialData[2].length === 0) {
+            return 0;
+        }
 
-        return await paginateReviews(url, sort, pages, search_query, clean, initialData);
+        const nextPageToken = initialData[1];
+        if (!nextPageToken || Number(pages) === 1) {
+            return clean ? parseReviews(initialData[2]) : initialData[2];
+        }
+
+        return await paginateReviews(url, sortValue, pages, search_query, clean, initialData);
+
     } catch (e) {
-        console.error(e);
-        return;
+        console.error("Scraper Error:", e instanceof Error ? e.message : e);
+        return 0;
     }
 }

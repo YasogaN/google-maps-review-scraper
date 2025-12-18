@@ -16,9 +16,6 @@
   "homepage": "github.com/YasogaN/google-maps-review-scraper",
   "author": "YasogaN",
   "license": "MIT",
-  "dependencies": {
-    "hex2dec": "^1.1.2"
-  },
   "files": [
     "index.js",
     "src/",
