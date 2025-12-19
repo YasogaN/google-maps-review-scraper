@@ -33,8 +33,8 @@ export function validateParams(url: string, sort_type: string, pages: string | n
 /**
  * Fetches and handles the XSSI security prefix.
  */
-export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "") {
-    const apiUrl = listugcposts(url, sort, nextPage, search_query);
+export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "", sessionToken: string) {
+    const apiUrl = listugcposts(url, sort, nextPage, search_query, sessionToken);
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
@@ -63,7 +63,8 @@ export async function paginateReviews(
     pages: string | number,
     search_query: string,
     clean: boolean,
-    initialData: any
+    initialData: any,
+    sessionToken: string
 ) {
     let allReviews = [...(initialData[2] || [])];
     let nextToken = initialData[1]?.toString().replace(/"/g, "");
@@ -95,7 +96,7 @@ export async function paginateReviews(
         console.log(`Scraping pages batch starting with token prefix ${batchTokens[0].substring(0, 10)}...`);
 
         const results = await Promise.allSettled(
-            batchTokens.map(token => fetchReviews(url, sort, token, search_query))
+            batchTokens.map(token => fetchReviews(url, sort, token, search_query, sessionToken))
         );
 
         let stopPagination = false;
@@ -165,12 +166,3 @@ export function calculateNextId(base64Str: string): string {
         return btoa(binary).replace(/=/g, '');
     }
 }
-
-/**
- * Safely converts a hex string to a BigInt.
- * Checks for the '0x' prefix and adds it if missing.
- */
-export function hexToBigInt(hex: string): bigint {
-    const cleanHex = hex.startsWith("0x") ? hex : `0x${hex}`;
-    return BigInt(cleanHex);
-};

@@ -11,19 +11,20 @@ import parseReviews from "./parser.js";
  * @param {string} [options.search_query=""] - The search query to filter reviews.
  * @param {string} [options.pages="max"] - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
  * @param {boolean} [options.clean=false] - Whether to return clean reviews or not.
+ * @param {string} [options.sessionToken=""] - The session token for authentication.
  * @returns {Promise<Array|number>} - Returns an array of reviews or 0 if no reviews are found.
  * @throws {Error} - Throws an error if the URL is not provided or if fetching reviews fails.
  */
 export async function scraper(
     url: string,
-    { sort_type = "relevent", search_query = "", pages = "max", clean = false } = {}
+    { sort_type = "relevent", search_query = "", pages = "max", clean = false, sessionToken = "" } = {}
 ) {
     try {
         validateParams(url, sort_type, pages, clean);
 
         const sortValue = SortEnum[sort_type as keyof typeof SortEnum] as 1 | 2 | 3 | 4;
 
-        const initialData = await fetchReviews(url, sortValue, "", search_query);
+        const initialData = await fetchReviews(url, sortValue, "", search_query, sessionToken);
 
         if (!initialData || !Array.isArray(initialData[2]) || initialData[2].length === 0) {
             return 0;
@@ -34,7 +35,7 @@ export async function scraper(
             return clean ? parseReviews(initialData[2]) : initialData[2];
         }
 
-        return await paginateReviews(url, sortValue, pages, search_query, clean, initialData);
+        return await paginateReviews(url, sortValue, pages, search_query, clean, initialData, sessionToken);
 
     } catch (e) {
         console.error("Scraper Error:", e instanceof Error ? e.message : e);
