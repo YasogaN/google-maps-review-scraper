@@ -65,37 +65,105 @@ export async function paginateReviews(
     clean: boolean,
     initialData: any
 ) {
-    // InitialData[2] is the reviews array, InitialData[1] is the token
     let allReviews = [...(initialData[2] || [])];
-    let nextPageToken = initialData[1]?.toString().replace(/"/g, "");
-    let currentPage = 2;
-    const maxPages = pages === "max" ? Infinity : Number(pages);
+    let nextToken = initialData[1]?.toString().replace(/"/g, "");
 
-    while (nextPageToken && currentPage <= maxPages) {
-        try {
-            console.log(`Scraping page ${currentPage}...`);
-            const data = await fetchReviews(url, sort, nextPageToken, search_query);
+    if (!nextToken) {
+        return clean ? parser(allReviews) : allReviews;
+    }
 
-            if (data[2]) {
-                allReviews = [...allReviews, ...data[2]];
+    const max = pages === "max" ? Infinity : Number(pages);
+
+    const BATCH_SIZE = 10;
+    let batchStart = 0;
+
+    while (true) {
+        const batchTokens = [];
+
+        const pagesNeeded = (max === Infinity) ? Infinity : max - 1 - batchStart;
+        if (pagesNeeded <= 0) break;
+
+        const currentBatchSize = Math.min(BATCH_SIZE, pagesNeeded);
+
+        for (let i = 0; i < currentBatchSize; i++) {
+            batchTokens.push(nextToken);
+            nextToken = calculateNextId(nextToken);
+        }
+
+        if (batchTokens.length === 0) break;
+
+        console.log(`Scraping pages batch starting with token prefix ${batchTokens[0].substring(0, 10)}...`);
+
+        const results = await Promise.allSettled(
+            batchTokens.map(token => fetchReviews(url, sort, token, search_query))
+        );
+
+        let stopPagination = false;
+
+        for (const res of results) {
+            if (res.status === "fulfilled") {
+                const data = res.value;
+                if (data[2] && data[2].length > 0) {
+                    allReviews.push(...data[2]);
+                } else {
+                    stopPagination = true;
+                }
+            } else {
+                console.error("Error fetching page:", res.reason);
             }
+        }
 
-            nextPageToken = data[1]?.toString().replace(/"/g, "");
+        batchStart += batchTokens.length;
 
-            if (!nextPageToken) break;
+        if (stopPagination || (max !== Infinity && batchStart >= max - 1)) {
+            break;
+        }
 
-            // Simple back-off to prevent 429 errors
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            currentPage++;
-        } catch (error) {
-            console.error(`Error on page ${currentPage}:`, error);
-            break; // Stop pagination on error but return what we have
+        if (max === Infinity && !stopPagination) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 
-    // Use the optimized parser from the previous turn
-    // No 'await' needed now as it's a synchronous transformation
     return clean ? parser(allReviews) : allReviews;
+
+}
+
+
+/**
+ * Calculates the next sequential ID based on the provided Base64 pattern.
+ */
+export function calculateNextId(base64Str: string): string {
+    // Decode Base64 to a Buffer (Node.js) or Uint8Array (Browser)
+    let buf: any;
+    if (typeof (globalThis as any).Buffer !== 'undefined') {
+        buf = (globalThis as any).Buffer.from(base64Str, 'base64');
+    } else {
+        const binaryString = atob(base64Str);
+        buf = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            buf[i] = binaryString.charCodeAt(i);
+        }
+    }
+
+    // Increment the value (Starting from the last byte)
+    // This logic handles carry-over (e.g., if a byte is 255, it resets to 0 and increments the next)
+    for (let i = buf.length - 1; i >= 0; i--) {
+        if (buf[i] < 255) {
+            buf[i]++;
+            break;
+        } else {
+            buf[i] = 0;
+        }
+    }
+
+    // Re-encode the modified buffer back to Base64
+    if (typeof (globalThis as any).Buffer !== 'undefined') {
+        return buf.toString('base64').replace(/=/g, '');
+    } else {
+        let binary = '';
+        buf.forEach((b: number) => binary += String.fromCharCode(b));
+        return btoa(binary).replace(/=/g, '');
+    }
 }
 
 /**
