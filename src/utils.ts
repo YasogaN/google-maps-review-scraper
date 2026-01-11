@@ -4,6 +4,10 @@ import parser from "./parser.js";
 
 /**
  * Validates parameters for the Google Maps review scraper.
+ * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {string} sort_type - The type of sorting for the reviews ("relevent", "newest", "highest_rating", "lowest_rating").
+ * @param {string | number} pages - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
+ * @param {boolean} clean - Whether to return clean reviews or not.
  */
 export function validateParams(url: string, sort_type: string, pages: string | number, clean: boolean) {
     try {
@@ -32,6 +36,11 @@ export function validateParams(url: string, sort_type: string, pages: string | n
 
 /**
  * Fetches and handles the XSSI security prefix.
+ * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {1 | 2 | 3 | 4} sort - The type of sorting for the reviews (1: Most Relevant, 2: Newest, 3: Highest Rating, 4: Lowest Rating).
+ * @param {string} nextPage - The next page token for pagination.
+ * @param {string} search_query - The search query to filter reviews.
+ * @param {string} sessionToken - The session token for authentication.
  */
 export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "", sessionToken: string) {
     const apiUrl = listugcposts(url, sort, nextPage, search_query, sessionToken);
@@ -56,6 +65,13 @@ export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = 
 
 /**
  * Paginates through reviews.
+ * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {1 | 2 | 3 | 4} sort - The type of sorting for the reviews (1: Most Relevant, 2: Newest, 3: Highest Rating, 4: Lowest Rating).
+ * @param {string | number} pages - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
+ * @param {string} search_query - The search query to filter reviews.
+ * @param {boolean} clean - Whether to return clean reviews or not.
+ * @param {any} initialData - The initial data returned from the first fetch.
+ * @param {string} sessionToken - The session token for authentication.
  */
 export async function paginateReviews(
     url: string,
@@ -132,6 +148,8 @@ export async function paginateReviews(
 
 /**
  * Calculates the next sequential ID based on the provided Base64 pattern.
+ * @param {string} base64Str - The Base64 string to calculate the next ID from.
+ * @returns {string} The next sequential ID.
  */
 export function calculateNextId(base64Str: string): string {
     // Decode Base64 to a Buffer (Node.js) or Uint8Array (Browser)
