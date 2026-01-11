@@ -11,5 +11,5 @@
 export default function (placeId: string, so: 1 | 2 | 3 | 4, pg = "", sq = "", sessionToken: string) {
     const type = sq ? "1m7" : "1m6";
     const _sq = sq ? `!3s${sq}` : "";
-    return `https://www.google.com/maps/rpc/listugcposts?authuser=0&hl=en&gl=in&pb=!${type}!1s${placeId}${_sq}!6m4!4m1!1e1!4m1!1e3!2m2!1i10!2s${pg}!5m2!1s${sessionToken}!7e81!8m9!2b1!3b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!11m4!1e3!2e1!6m1!1i2!13m1!1e${so}`;
+    return `https://www.google.com/maps/rpc/listugcposts?authuser=0&hl=en&gl=US&pb=!${type}!1s${placeId}${_sq}!6m4!4m1!1e1!4m1!1e3!2m2!1i10!2s${pg}!5m2!1s${sessionToken}!7e81!8m9!2b1!3b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!11m4!1e3!2e1!6m1!1i2!13m1!1e${so}`;
 }
