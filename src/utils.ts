@@ -70,7 +70,6 @@ export async function fetchReviews(placeId: string, sort: 1 | 2 | 3 | 4, nextPag
  * @param {string | number} pages - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
  * @param {string} search_query - The search query to filter reviews.
  * @param {boolean} clean - Whether to return clean reviews or not.
- * @param {any} initialData - The initial data returned from the first fetch.
  * @param {string} sessionToken - The session token for authentication.
  */
 export async function paginateReviews(
