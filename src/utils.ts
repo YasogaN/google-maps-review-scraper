@@ -36,14 +36,14 @@ export function validateParams(url: string, sort_type: string, pages: string | n
 
 /**
  * Fetches and handles the XSSI security prefix.
- * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {string} placeId - The CID (e.g., 0x3ae2575b18d322ff:0x3c53adf6ab35b12b)
  * @param {1 | 2 | 3 | 4} sort - The type of sorting for the reviews (1: Most Relevant, 2: Newest, 3: Highest Rating, 4: Lowest Rating).
  * @param {string} nextPage - The next page token for pagination.
  * @param {string} search_query - The search query to filter reviews.
  * @param {string} sessionToken - The session token for authentication.
  */
-export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "", sessionToken: string) {
-    const apiUrl = listugcposts(url, sort, nextPage, search_query, sessionToken);
+export async function fetchReviews(placeId: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "", sessionToken: string) {
+    const apiUrl = listugcposts(placeId, sort, nextPage, search_query, sessionToken);
     const response = await fetch(apiUrl);
 
     if (!response.ok) {
@@ -65,7 +65,7 @@ export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = 
 
 /**
  * Paginates through reviews.
- * @param {string} url - The URL of the Google Maps location to scrape reviews from.
+ * @param {string} placeId - The CID (e.g., 0x3ae2575b18d322ff:0x3c53adf6ab35b12b)
  * @param {1 | 2 | 3 | 4} sort - The type of sorting for the reviews (1: Most Relevant, 2: Newest, 3: Highest Rating, 4: Lowest Rating).
  * @param {string | number} pages - The number of pages to scrape (default is "max"). If set to a number, it will scrape that number of pages (results will be 10 * pages) or until there are no more reviews.
  * @param {string} search_query - The search query to filter reviews.
@@ -74,18 +74,24 @@ export async function fetchReviews(url: string, sort: 1 | 2 | 3 | 4, nextPage = 
  * @param {string} sessionToken - The session token for authentication.
  */
 export async function paginateReviews(
-    url: string,
+    placeId: string,
     sort: 1 | 2 | 3 | 4,
     pages: string | number,
     search_query: string,
     clean: boolean,
-    initialData: any,
     sessionToken: string
 ) {
+    const initialData = await fetchReviews(placeId, sort, "", search_query, sessionToken);
+
+    if (!initialData || !Array.isArray(initialData[2]) || initialData[2].length === 0) {
+        return [];
+    }
+
     let allReviews = [...(initialData[2] || [])];
     let nextToken = initialData[1]?.toString().replace(/"/g, "");
 
-    if (!nextToken) {
+    // If we only want 1 page or there are no more pages, return immediately
+    if (!nextToken || Number(pages) === 1) {
         return clean ? parser(allReviews) : allReviews;
     }
 
@@ -112,7 +118,7 @@ export async function paginateReviews(
         console.log(`Scraping pages batch starting with token prefix ${batchTokens[0].substring(0, 10)}...`);
 
         const results = await Promise.allSettled(
-            batchTokens.map(token => fetchReviews(url, sort, token, search_query, sessionToken))
+            batchTokens.map(token => fetchReviews(placeId, sort, token, search_query, sessionToken))
         );
 
         let stopPagination = false;
