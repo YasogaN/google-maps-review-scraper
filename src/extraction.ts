@@ -1,3 +1,5 @@
+import { client } from "./client.js";
+
 /**
  * Main function to fetch data for a place.
  * @param {string} placeId - The CID (e.g., 0x3ae2575b18d322ff:0x3c53adf6ab35b12b)
@@ -6,7 +8,7 @@ export default async function fetchSessionToken(placeId: string) {
     try {
         // fetch page
         const sourceUrl = `https://maps.google.com/maps/place/${placeId}`;
-        const sourceRes = await fetch(sourceUrl);
+        const sourceRes = await client.fetch(sourceUrl);
         const html = await sourceRes.text();
 
         // Grab the kEI token using the fast split method

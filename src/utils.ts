@@ -1,3 +1,4 @@
+import { client } from "./client.js";
 import listugcposts from "./listugcposts.js";
 import { SortEnum } from "./types.js";
 import parser from "./parser.js";
@@ -44,7 +45,7 @@ export function validateParams(url: string, sort_type: string, pages: string | n
  */
 export async function fetchReviews(placeId: string, sort: 1 | 2 | 3 | 4, nextPage = "", search_query = "", sessionToken: string) {
     const apiUrl = listugcposts(placeId, sort, nextPage, search_query, sessionToken);
-    const response = await fetch(apiUrl);
+    const response = await client.fetch(apiUrl);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
