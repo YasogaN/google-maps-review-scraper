@@ -24,8 +24,13 @@
   ],
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@types/tough-cookie": "^4.0.5",
     "rimraf": "^6.1.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "impit": "^0.8.1",
+    "tough-cookie": "^6.0.0"
   }
 }
