@@ -3,10 +3,10 @@ import type { ParsedReview } from "./types.js";
 /**
  * Parses an array of reviews and returns a minified JSON string.
  * @param {any[][]} reviews - Array of review data wrappers.
- * @returns {string} A JSON string of the parsed reviews.
+ * @returns {ParsedReview[]} An array of the parsed reviews.
  */
-export default function parseReviews(reviews: any[][]): string {
-	if (!Array.isArray(reviews)) return JSON.stringify([]);
+export default function parseReviews(reviews: any[][]): ParsedReview[] {
+	if (!Array.isArray(reviews)) return [];
 
 	const parsedReviews: ParsedReview[] = reviews.map(([review]) => {
 		// Safety check for empty or malformed review wrappers
@@ -58,5 +58,5 @@ export default function parseReviews(reviews: any[][]): string {
 	}).filter((r): r is ParsedReview => r !== null); // Remove any failed parses
 
 	// Use null, 0 or no arguments for minified JSON as per your docstring
-	return JSON.stringify(parsedReviews);
+	return parsedReviews;
 }
