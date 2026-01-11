@@ -34,7 +34,7 @@ https://www.google.com/maps/rpc/listugcposts
 
         3. `2m2` - message (2 blocks)
             1. `1i10` - 32-bit integer: Number of results per page
-            2. `2s` - string: Base 64 encoded data of page number [^3] [^4]
+            2. `2s` - string: Base 64 encoded data of page number [^4]
 
         4. `5m2` - message (2 blocks) [^1]
             1. `1s` - string: CSRF token <span style="color:orange">[UNCERTAIN]</span>
@@ -60,8 +60,6 @@ https://www.google.com/maps/rpc/listugcposts
 [^1]: This message block seams to be a CSRF Token accompanied by a enumarative field. However any changes would result in a `400` Bad Request. It was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint.
 
 [^2]: This message block was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint. As usual, 1 stands for true and 0 stands for false after the letter b.
-
-[^3]: Page numbers from 1-85 can be found at: [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum). However, it also includes a second a page number (which is different from [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum)), which is located at the second line of the json response.
 
 [^4]: The string is an empty element when requesting for the first page of reviews.
 
