@@ -8,7 +8,9 @@ import type { ParsedReview } from "./types.js";
 export default function parseReviews(reviews: any[][]): ParsedReview[] {
 	if (!Array.isArray(reviews)) return [];
 
-	const parsedReviews: ParsedReview[] = reviews.map(([review]) => {
+	const parsedReviews: ParsedReview[] = reviews.map((item) => {
+		const review = Array.isArray(item[0]) ? item[0] : item;
+
 		// Safety check for empty or malformed review wrappers
 		if (!review) return null;
 
