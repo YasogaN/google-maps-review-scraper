@@ -1,6 +1,6 @@
 {
   "name": "google-maps-review-scraper",
-  "version": "1.5.0",
+  "version": "2.0.0",
   "description": "A review scraper made for google maps",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
