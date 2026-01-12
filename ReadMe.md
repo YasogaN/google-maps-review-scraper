@@ -13,7 +13,6 @@
 ## Frameworks/Technologies
 
 ![](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-[![hex2dec](https://img.shields.io/badge/hex2dec-blue?&style=for-the-badge)](https://www.npmjs.com/package/hex2dec)
 
 </div>
 
@@ -56,7 +55,7 @@ const reviews = await scraper("url", { sort_type: "sort_type", search_query: "se
 
 ### Returns
 
-`reviews` - `Promise<Array|number>`: A promise that resolves to a array containing the reviews in these [formats](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/outputs/output.md) depending on the value of `clean` or the number `0` if no reivews exist.
+`reviews` - `Promise<Array|number>`: A promise that resolves to an array containing the reviews in these [formats](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/outputs/output.md) depending on the value of `clean` or the number `0` if no reviews exist.
 
 ---
 
@@ -111,7 +110,8 @@ Special thanks to [@marin-m](https://github.com/marin-m) for his outstanding wor
 
 ### Dependencies
 
- - [hex2dec](https://npm.im/hex2dec) by [@donmccurdy](https://github.com/donmccurdy)
+ - [impit](https://github.com/apify/impit) by [@apify](https://github.com/apify)
+ - [tough-cookie](https://github.com/salesforce/tough-cookie) by [@salesforce](https://github.com/salesforce)
 
 ---
 

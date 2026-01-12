@@ -12,58 +12,43 @@ https://www.google.com/maps/rpc/listugcposts
 
 - `hl`: language (`en`)
 
-- `gl`: region (`lk`)
+- `gl`: region (`US`)
 
-- `pb`: Protobuffer Data  (`!1m7!1s0x3ae259fa5863aa65:0xe33d2d1f01284b9b!3s!6m4!4m1!1e1!4m1!1e3!2m2!1i10!2s!5m2!1sBnOwZvzePPfF4-EPy7LK0Ak!7e81!8m5!1b1!2b1!3b1!5b1!7b1!11m6!1e3!2e1!3sen!4slk!6m1!1i2!13m1!1e2`)
+- `pb`: Protobuffer Data  (`!1m6!1s0x3ae259fa5863aa65:0xe33d2d1f01284b9b!6m4!4m1!1e1!4m1!1e3!2m2!1i10!2s!5m2!1sSessionToken!7e81!8m9!2b1!3b1!5b1!7b1!12m4!1b1!2b1!4m1!1e1!11m4!1e3!2e1!6m1!1i2!13m1!1e2`)
 
 ## Protocol Buffer Data Breakdown
 
-1. `1m7` - message (7 blocks)
-
-    1. `1s` - string: `Hex String 1` and `Hex String 2` from the [place url](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md#protcol-buffer-data-breakdown) sperated by a colon (`:`)
-
-    2. `3s` - string: Search Query
-
-    3. `6m4` - message (4 blocks)
-
-        1. `4m1` - message (1 block)
+1. `1m6` (or `1m7` if search query is present) - message
+    1. `1s` - string: `Hex String 1` and `Hex String 2` from the [place url](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/urls/place.md#protcol-buffer-data-breakdown) seperated by a colon (`:`)
+    2. `3s` - string: Search Query (Only present if parent is `1m7`)
+    3. `6m4` - message
+        1. `4m1` - message
             1. `1e1` - enum
-
-        2. `4m1` - message (1 block)
+        2. `4m1` - message
             1. `1e3` - enum
-
-        3. `2m2` - message (2 blocks)
-            1. `1i10` - 32-bit integer: Number of results per page
-            2. `2s` - string: Base 64 encoded data of page number [^3] [^4]
-
-        4. `5m2` - message (2 blocks) [^1]
-            1. `1s` - string: CSRF token <span style="color:orange">[UNCERTAIN]</span>
+        3. `2m2` - message
+            1. `1i10` - int: Number of results per page
+            2. `2s` - string: Base 64 encoded data of page number [^4]
+        4. `5m2` - message [^1]
+            1. `1s` - string: Session Token
             2. `7e81` - enum
-
-    4. `8m5` - message (5 blocks) [^2]
-        1. `1b1` - boolean: Toggle number of likes (False returns `null`)
-        2. `2b1` - boolean: Toggle the reply of the business (False returns an empty array (`[]`))
-        3. `3b1` - boolean: Toggle the name of the google user (False returns `'A Google User'`)
-        4. `5b1` - boolean: Multiple changes to the schema [^6]
-        5. `7b1` - boolean: No idea what this does
-
-    5. `11m6` - message (6 blocks)
-        1. `1e3` - enum
-        2. `2e1` - enum
-        3. `3s` - string: Language
-        4. `4s` - string: Region
-        5. `6m1` - message (1 block)
-            1. `1i2` - 32-bit integer: //DO
-        6. `13m1` - message (1 block)
+    4. `8m9` - message [^2]
+        1. `2b1` - boolean: Toggle number of likes
+        2. `3b1` - boolean: Toggle the name of the google user
+        3. `5b1` - boolean: Multiple changes to the schema [^6]
+        4. `7b1` - boolean: No idea what this does
+        5. `12m4` - message
+            1. `1b1` - boolean
+            2. `2b1` - boolean
+            3. `4m1` - message
+                1. `1e1` - enum
+        6. `11m4` - message
+            1. `1e3` - enum
+            2. `2e1` - enum
+            3. `6m1` - message
+                 1. `1i2` - int
+        7. `13m1` - message
             1. `1e2` - enum: Sorting of results [^5]
-
-[^1]: This message block seams to be a CSRF Token accompanied by a enumarative field. However any changes would result in a `400` Bad Request. It was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint.
-
-[^2]: This message block was also present in [listentitiesreviews](https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/endpoints/listentitiesreviews.md) endpoint. As usual, 1 stands for true and 0 stands for false after the letter b.
-
-[^3]: Page numbers from 1-85 can be found at: [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum). However, it also includes a second a page number (which is different from [https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum](/https://github.com/YasogaN/google-maps-review-scraper/blob/main/docs/pgnum)), which is located at the second line of the json response.
-
-[^4]: The string is an empty element when requesting for the first page of reviews.
 
 [^5]:| Value | Meaning (First) |
      |-------|-----------------|
