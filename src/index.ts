@@ -35,6 +35,8 @@ export async function scraper(
             throw new Error("Could not fetch session token.");
         }
 
+        await new Promise(r => setTimeout(r, 2000));
+
         const reviews = await paginateReviews(placeId, sortValue, pages, search_query, clean, sessionToken);
 
         if (!reviews || (Array.isArray(reviews) && reviews.length === 0)) {

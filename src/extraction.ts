@@ -7,7 +7,7 @@ import { client } from "./client.js";
 export default async function fetchSessionToken(placeId: string) {
     try {
         // fetch page
-        const sourceUrl = `https://maps.google.com/maps/place/${placeId}`;
+        const sourceUrl = `https://maps.google.com/maps/place/${placeId}?hl=en&gl=US`;
         const sourceRes = await client.fetch(sourceUrl);
         const html = await sourceRes.text();
 
