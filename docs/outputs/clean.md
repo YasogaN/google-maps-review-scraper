@@ -20,23 +20,32 @@ Check [Reporting Issues](#reporting-issues) if you find any issues with this doc
 "review": {
     "rating": "Rating Given",
     "text": "Review Text" || null,
-    "langage": "Language the review was written in" || null
+    "language": "Language the review was written in" || null
 },
-"images": {
-    "id": "Image ID",
-    "url": "URL to image",
-    "size": {
-        "width": "Image width",
-        "height": "Image height",
-    },
-    "location": {
-        "friendly": "User friendly name of location",
-        "lat": "Latitude when picture was taken",
-        "long": "Longitiude when picture was taken",
-    },
-    "caption": "Image caption" || null
+"images": [
+    {
+        "id": "Image ID",
+        "url": "URL to image",
+        "size": {
+            "width": "Image width",
+            "height": "Image height",
+        },
+        "location": {
+            "friendly": "User friendly name of location",
+            "lat": "Latitude when picture was taken",
+            "long": "Longitiude when picture was taken",
+        },
+        "caption": "Image caption" || null
+    }
+] || null,
+"source": "Name of platform where the review was published" || null,
+"response": {
+    "text": "Response Text" || null,
+    "time": {
+        "published": "timestamp" || null,
+        "last_edited": "timestamp" || null
+    }
 } || null
-"source": "Name of platform where the review was published" || null
 ```
 
 The above format should is self explanatory
