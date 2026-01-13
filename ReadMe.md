@@ -108,6 +108,8 @@ Please note that this project is governed by a [Code of Conduct](https://github.
 
 Special thanks to [@marin-m](https://github.com/marin-m) for his outstanding work on the [pbtk](https://github.com/marin-m/pbtk) repository. His contributions and insights on protocol buffers were invaluable in my research and development process.
 
+Thanks to Minh for helping keep the library maintained!
+
 ### Dependencies
 
  - [impit](https://github.com/apify/impit) by [@apify](https://github.com/apify)
