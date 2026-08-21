@@ -61,7 +61,7 @@ function _lastIndex<T>(arr: T[], predicate: (v: T | undefined) => boolean): numb
  * @returns A parsed review object, or `null` if the entry is invalid.
  */
 function _parseReview(review: unknown): ParsedReview | null {
-    if (!Array.isArray(review) || review.length < 5) return null;
+    if (!Array.isArray(review) || review.length < 6) return null;
 
     const rating = numberOrZero(review[1]);
 
@@ -75,6 +75,9 @@ function _parseReview(review: unknown): ParsedReview | null {
     let authorId = "Unknown";
     const match = authorUrl.match(/\/contrib\/(\d+)/);
     if (match?.[1]) authorId = match[1];
+
+    const responseArr = review[4];
+    const responseText = stringOrEmpty(Array.isArray(responseArr) ? responseArr[2] : null);
 
     const reviewId = stringOrEmpty(review[5]);
 
@@ -120,7 +123,13 @@ function _parseReview(review: unknown): ParsedReview | null {
         review: { rating, text: fullText ?? shortText, language },
         images,
         source: "Google Local Search Panel",
-        response: null,
+        response: {
+            text: responseText,
+            time: {
+                published: null,
+                last_edited: null,
+            }
+        },
     };
 }
 
