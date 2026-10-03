@@ -28,4 +28,7 @@ web_modules/
 #tests
 test.js
 
+#coverage
+coverage/
+
 dist/
