@@ -1,4 +1,4 @@
-import { getPath, numberOrZero, stringOrDefault, stringOrEmpty } from "./sharedParser.js";
+import { getPath, numberOrZero, stringOrDefault, stringOrEmpty, stringOrNull } from "./sharedParser.js";
 import type { ParsedReview } from "./types.js";
 
 /**
@@ -76,8 +76,9 @@ function _parseReview(review: unknown): ParsedReview | null {
     const match = authorUrl.match(/\/contrib\/(\d+)/);
     if (match?.[1]) authorId = match[1];
 
-    const responseArr = review[4];
-    const responseText = stringOrEmpty(Array.isArray(responseArr) ? responseArr[2] : null);
+    const responseArr: unknown[] | null = Array.isArray(review[4]) ? review[4] : null;
+    const responseText = stringOrNull(responseArr?.[2]);
+    const responsePublished = responseArr?.[1] ?? null;
 
     const reviewId = stringOrEmpty(review[5]);
 
@@ -123,13 +124,15 @@ function _parseReview(review: unknown): ParsedReview | null {
         review: { rating, text: fullText ?? shortText, language },
         images,
         source: "Google Local Search Panel",
-        response: {
-            text: responseText,
-            time: {
-                published: null,
-                last_edited: null,
+        response: responseText
+            ? {
+                text: responseText,
+                time: {
+                    published: responsePublished,
+                    last_edited: null,
+                },
             }
-        },
+            : null,
     };
 }
 
