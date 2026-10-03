@@ -77,7 +77,7 @@ export async function fetchReviews({ placeId, sortOrder, client, paginationToken
  * @param data The raw JSON-parsed response.
  * @returns An object with `reviews` and `nextToken`, or `null` if extraction fails.
  */
-function extractPage(data: unknown): { reviews: JsonArray; nextToken: string } | null {
+export function extractPage(data: unknown): { reviews: JsonArray; nextToken: string } | null {
   if (!Array.isArray(data) || data.length < 2) return null;
   const payload = data[1];
   if (!Array.isArray(payload) || payload.length <= 10 || !payload[10]) return null;
