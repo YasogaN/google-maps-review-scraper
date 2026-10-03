@@ -2,8 +2,8 @@ name: Live tests
 
 on:
   schedule:
-    # Every day at 03:00 UTC.
-    - cron: "0 3 * * *"
+    # Every day at 03:00 IST (21:30 UTC).
+    - cron: "30 21 * * *"
   workflow_dispatch:
 
 permissions:
