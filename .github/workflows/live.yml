@@ -12,9 +12,7 @@ permissions:
 jobs:
   live:
     name: Live endpoint tests
-    # Self-hosted runner label. Set the LIVE_RUNNER repository variable to the
-    # runner's label; it falls back to the standard "self-hosted" label.
-    runs-on: ${{ vars.LIVE_RUNNER || 'self-hosted' }}
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
