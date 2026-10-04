@@ -22,7 +22,7 @@ export function validateParams({ url, sort_type, pages, clean }: Validate) {
     throw new Error(`Invalid URL format: ${url}`);
   }
 
-  if (!(sort_type in SortEnum)) {
+  if (!Object.hasOwn(SortEnum, sort_type)) {
     throw new Error(`Invalid sort type: ${sort_type}. Expected: ${Object.keys(SortEnum).join(", ")}`);
   }
 

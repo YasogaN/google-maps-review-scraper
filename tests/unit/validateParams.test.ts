@@ -41,6 +41,14 @@ describe("validateParams", () => {
     );
   });
 
+  it("rejects inherited object keys as sort types", () => {
+    for (const sort_type of ["toString", "constructor", "hasOwnProperty", "__proto__"]) {
+      expect(() => validateParams({ ...VALID_PARAMS, sort_type })).toThrow(
+        /Invalid sort type/,
+      );
+    }
+  });
+
   it("rejects NaN page counts", () => {
     expect(() => validateParams({ ...VALID_PARAMS, pages: Number.NaN })).toThrow(
       /Invalid pages value/,
