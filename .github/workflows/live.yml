@@ -1,0 +1,35 @@
+name: Live tests
+
+on:
+  schedule:
+    # Every day at 03:00 IST (21:30 UTC).
+    - cron: "30 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    name: Live endpoint tests
+    runs-on: self-hosted
+    timeout-minutes: 120
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run live tests (response change detection)
+        run: pnpm run test:live

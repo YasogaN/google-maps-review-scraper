@@ -19,6 +19,12 @@
   ],
   "scripts": {
     "build": "node scripts/clean.mjs && tsc",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "vitest run tests/unit tests/integration",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:live": "vitest run tests/live",
+    "test:coverage": "vitest run tests/unit tests/integration --coverage",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
@@ -28,6 +34,8 @@
   "devDependencies": {
     "@types/node": "^25.6.2",
     "@types/tough-cookie": "^4.0.5",
-    "typescript": "^5.9.3"
+    "@vitest/coverage-v8": "^5.0.3",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.3"
   }
 }

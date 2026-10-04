@@ -22,7 +22,7 @@ export function validateParams({ url, sort_type, pages, clean }: Validate) {
     throw new Error(`Invalid URL format: ${url}`);
   }
 
-  if (!(sort_type in SortEnum)) {
+  if (!Object.hasOwn(SortEnum, sort_type)) {
     throw new Error(`Invalid sort type: ${sort_type}. Expected: ${Object.keys(SortEnum).join(", ")}`);
   }
 
@@ -77,7 +77,7 @@ export async function fetchReviews({ placeId, sortOrder, client, paginationToken
  * @param data The raw JSON-parsed response.
  * @returns An object with `reviews` and `nextToken`, or `null` if extraction fails.
  */
-function extractPage(data: unknown): { reviews: JsonArray; nextToken: string } | null {
+export function extractPage(data: unknown): { reviews: JsonArray; nextToken: string } | null {
   if (!Array.isArray(data) || data.length < 2) return null;
   const payload = data[1];
   if (!Array.isArray(payload) || payload.length <= 10 || !payload[10]) return null;
