@@ -20,7 +20,9 @@ const schema = JSON.parse(
 async function fetchLiveReviews(): Promise<unknown[]> {
   return (await scraper({
     url: LIVE_PLACE_URL,
-    sort_type: "newest",
+    // "relevant" surfaces owner responses for this place; "newest" does not,
+    // which would make the owner-response check below vacuous.
+    sort_type: "relevant",
     pages: 5,
     clean: false,
   })) as unknown[];
