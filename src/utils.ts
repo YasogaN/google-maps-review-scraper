@@ -6,7 +6,7 @@ import { SortEnum, type FetchReviewsParams, type JsonArray, type PaginateReviews
  * Validate scraper input parameters, throwing on invalid values.
  *
  * @param options           - The parameters to validate.
- * @param options.url       - The Google Maps URL (must contain "google.com").
+ * @param options.url       - The Google Maps URL (must be on `google.com` or a subdomain).
  * @param options.sort_type - Sort order key that must exist in `SortEnum`.
  * @param options.pages     - Number of pages (must be a number).
  * @param options.clean     - Whether to return parsed reviews (must be boolean).
