@@ -25,6 +25,9 @@ web_modules/
 # vscode
 .vscode
 
+# opencode
+.opencode/
+
 #tests
 test.js
 
