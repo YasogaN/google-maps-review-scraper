@@ -28,6 +28,8 @@ describe("validateParams", () => {
       "https://google.com/maps/place/x",
       "https://www.google.com/maps/place/x",
       "https://maps.google.com/maps/place/x",
+      "https://google.com./maps/place/x",
+      "https://www.google.com./maps/place/x",
     ]) {
       expect(() => validateParams({ ...VALID_PARAMS, url })).not.toThrow();
     }
@@ -39,6 +41,8 @@ describe("validateParams", () => {
       "https://evilgoogle.com",
       "https://notgoogle.com",
       "https://google.com.evil.com",
+      "https://evilgoogle.com.",
+      "https://google.com.evil.com.",
     ]) {
       expect(() => validateParams({ ...VALID_PARAMS, url })).toThrow(/Invalid host/);
     }
