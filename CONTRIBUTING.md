@@ -38,7 +38,10 @@ tiers:
   fake HTTP client, plus response-shape contract checks.
 - **`tests/live`** — tests that hit the real Google Maps endpoint. They run on a
   schedule on a self-hosted runner (see `.github/workflows/live.yml`) and also
-  detect changes to the undocumented BOQ response shape.
+  detect changes to the undocumented BOQ response shape. The committed
+  `tests/fixtures/boq-schema.json` pins the top-level type of each review index;
+  nested parser invariants (time, author, owner response) are enforced
+  separately by `contractViolations` in `tests/helpers/contract.ts`.
 
 ```bash
 pnpm test               # unit + integration tests

@@ -5,12 +5,20 @@
  * live suite compares the observed structure against a committed schema and
  * against the structural assumptions the parser relies on, so a change in the
  * response surfaces as a failing (scheduled) test instead of silent breakage.
+ *
+ * `schemaViolations` only checks the top-level type of each review index.
+ * Nested structures (time, author, owner response) are covered separately by
+ * `contractViolations`, which encodes the parser's structural assumptions.
  */
 
 export interface BoqSchema {
   /** Minimum number of reviews the endpoint is expected to return. */
   reviewLength: { min: number };
-  /** Allowed types per top-level review index. Optional fields may be absent. */
+  /**
+   * Allowed types per top-level review index. Optional fields may be absent.
+   * Only the top-level type is compared; nested shapes are not part of the
+   * schema and are validated by `contractViolations` instead.
+   */
   indices: Record<string, string[]>;
   /** Top-level indexes that must always be present. */
   requiredIndices: string[];
@@ -39,7 +47,11 @@ export function topLevelShape(reviews: unknown[]): Record<string, string[]> {
   );
 }
 
-/** Return human-readable violations of the committed response schema. */
+/** Return human-readable violations of the committed response schema.
+ *
+ * Compares only the top-level type of each review index; nested invariants are
+ * checked by {@link contractViolations}.
+ */
 export function schemaViolations(reviews: unknown[], schema: BoqSchema): string[] {
   const problems: string[] = [];
   const observed = topLevelShape(reviews);
