@@ -25,7 +25,7 @@ describe("validateParams", () => {
 
   it("rejects non-google hosts", () => {
     expect(() => validateParams({ ...VALID_PARAMS, url: "https://example.com" })).toThrow(
-      /Invalid URL format/,
+      /Invalid host/,
     );
   });
 

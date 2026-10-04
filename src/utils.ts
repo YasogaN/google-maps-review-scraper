@@ -13,13 +13,16 @@ import { SortEnum, type FetchReviewsParams, type JsonArray, type PaginateReviews
  * @throws {Error} If any parameter is invalid.
  */
 export function validateParams({ url, sort_type, pages, clean }: Validate) {
+  let parsedUrl: URL;
   try {
-    const parsedUrl = new URL(url);
-    if (!parsedUrl.host.includes("google.com")) {
-      throw new Error(`Invalid host: ${parsedUrl.host}`);
-    }
-  } catch (e) {
+    parsedUrl = new URL(url);
+  } catch {
     throw new Error(`Invalid URL format: ${url}`);
+  }
+
+  const host = parsedUrl.hostname;
+  if (host !== "google.com" && !host.endsWith(".google.com")) {
+    throw new Error(`Invalid host: ${host}`);
   }
 
   if (!Object.hasOwn(SortEnum, sort_type)) {
