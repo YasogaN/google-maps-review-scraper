@@ -7,7 +7,7 @@ import { createClient } from "./client.js";
  *
  * @param options                    - Scraper configuration.
  * @param options.url                - Full Google Maps place URL.
- * @param options.sort_type          - Sort order: `"most_relevant"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`.
+ * @param options.sort_type          - Sort order: `"relevant"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`.
  * @param options.pages              - Number of pages to fetch (`-1` for all, default).
  * @param options.clean              - When `true`, return parsed `ParsedReview` objects.
  * @param options.proxy              - Optional proxy configuration.
