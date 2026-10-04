@@ -47,9 +47,13 @@ jobs:
             exit 0
           fi
           branch="${GITHUB_REF#refs/heads/}"
+          # `gh pr list --head` does not accept the `owner:branch` form, and a
+          # fork pull request can share the branch name, so match by branch and
+          # keep only same-repository pull requests.
           prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
-            --head "${GITHUB_REPOSITORY_OWNER}:${branch}" \
-            --base main --state open --json number --jq 'length')"
+            --head "$branch" --base main --state open \
+            --json number,isCrossRepository \
+            --jq '[.[] | select(.isCrossRepository == false)] | length')"
           if [ "$prs" -gt 0 ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "::notice title=CodeQL skipped::An open pull request for ${branch} takes priority over the push run."
