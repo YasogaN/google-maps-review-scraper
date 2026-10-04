@@ -15,9 +15,16 @@ concurrency:
 
 jobs:
   unit-integration:
-    name: Unit & integration tests
+    name: Unit & integration tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    strategy:
+      # One runtime failing should not hide the others' results.
+      fail-fast: false
+      matrix:
+        # Type definitions target Node 26, but the package must keep working on
+        # every supported LTS line, so exercise the suite on each.
+        node-version: ["22", "24", "26"]
     permissions:
       contents: read
       # Required to look up the open pull requests covering a pushed branch.
@@ -73,7 +80,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "26"
+          node-version: ${{ matrix.node-version }}
 
       - name: Setup pnpm
         if: steps.gate.outputs.run == 'true'
@@ -101,18 +108,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          node_version="${{ matrix.node-version }}"
+          job_name="Unit & integration tests (Node ${node_version})"
           if [ "${{ steps.gate.outputs.run }}" != "true" ]; then
             title="Skipped - covered by an open pull request"
             summary="The pull_request run takes priority for this branch, so this push run skipped the tests."
           elif [ "${{ job.status }}" = "success" ]; then
             title="Passed"
-            summary="Unit and integration tests passed with coverage."
+            summary="Unit and integration tests passed on Node ${node_version} with coverage."
           else
             title="Failed"
-            summary="Unit and integration tests did not pass; see the job logs."
+            summary="Unit and integration tests did not pass on Node ${node_version}; see the job logs."
           fi
           check_url="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" \
-            --jq '.jobs[] | select(.name == "Unit & integration tests") | .check_run_url')"
+            --jq ".jobs[] | select(.name == \"${job_name}\") | .check_run_url")"
           if ! gh api -X PATCH "${check_url#https://api.github.com/}" --input - <<JSON
           {"output":{"title":"${title}","summary":"${summary}"}}
           JSON
