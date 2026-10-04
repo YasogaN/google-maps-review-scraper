@@ -20,7 +20,9 @@ export function validateParams({ url, sort_type, pages, clean }: Validate) {
     throw new Error(`Invalid URL format: ${url}`);
   }
 
-  const host = parsedUrl.hostname;
+  // A trailing dot denotes the DNS root (e.g. "www.google.com."), so strip one
+  // optional dot to treat fully-qualified hostnames the same as their normal form.
+  const host = parsedUrl.hostname.replace(/\.$/, "");
   if (host !== "google.com" && !host.endsWith(".google.com")) {
     throw new Error(`Invalid host: ${host}`);
   }
