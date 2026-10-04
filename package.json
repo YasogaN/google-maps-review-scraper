@@ -1,6 +1,6 @@
 {
   "name": "google-maps-review-scraper",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "A review scraper made for google maps",
   "homepage": "https://github.com/YasogaN/google-maps-review-scraper",
   "repository": {
