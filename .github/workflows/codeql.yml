@@ -5,9 +5,10 @@ on:
   # targeting main, the pull_request run takes priority and this push run skips
   # the analysis so the change is not analyzed twice.
   push:
-  # Scan every change proposed for main, including pull requests from forks.
+  # Scan every change proposed for main or dev, including pull requests from
+  # forks.
   pull_request:
-    branches: [main]
+    branches: [main, dev]
   # Re-scan the default branch weekly to catch newly published queries.
   schedule:
     # Every Monday at 00:00 UTC.
@@ -51,19 +52,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           run=true
-          reason="No open pull request targeting main covers this branch."
+          reason="No open pull request targeting main or dev covers this branch."
           if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
             branch="${GITHUB_REF#refs/heads/}"
             # `gh pr list --head` does not accept the `owner:branch` form, and a
-            # fork pull request can share the branch name, so match by branch and
-            # keep only same-repository pull requests.
+            # fork pull request can share the branch name, so match by branch,
+            # keep only same-repository pull requests, and only count those
+            # targeting a branch CodeQL runs on.
             prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
-              --head "$branch" --base main --state open \
-              --json number,isCrossRepository \
-              --jq '[.[] | select(.isCrossRepository == false)] | length')"
+              --head "$branch" --state open \
+              --json number,isCrossRepository,baseRefName \
+              --jq '[.[] | select(.isCrossRepository == false and (.baseRefName == "main" or .baseRefName == "dev"))] | length')"
             if [ "$prs" -gt 0 ]; then
               run=false
-              reason="An open pull request targeting main for ${branch} takes priority over this push run."
+              reason="An open pull request targeting main or dev for ${branch} takes priority over this push run."
             fi
           fi
           echo "run=$run" >> "$GITHUB_OUTPUT"
