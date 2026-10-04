@@ -8,13 +8,52 @@ permissions:
   contents: read
 
 concurrency:
-  # A push and a pull_request for the same branch would otherwise both run.
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  # Event name is part of the group so push and pull_request runs can never
+  # cancel each other (see #57).
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
+  # A push and a pull_request both fire when a branch has an open pull request.
+  # This job decides who runs: the pull_request run always wins, so a push
+  # covered by an open pull request is skipped.
+  gate:
+    name: Check for an open pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # Required to look up the open pull requests covering a pushed branch.
+      pull-requests: read
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Decide whether to run tests
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" != "push" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="${GITHUB_REF#refs/heads/}"
+          prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
+            --head "${GITHUB_REPOSITORY_OWNER}:${branch}" \
+            --state open --json number --jq 'length')"
+          if [ "$prs" -gt 0 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Tests skipped::An open pull request for ${branch} takes priority over the push run."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
   unit-integration:
     name: Unit & integration tests
+    needs: gate
+    # When the gate reports false this job is skipped, so the run shows as
+    # neutral instead of a passing check that did no testing.
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
