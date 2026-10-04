@@ -10,6 +10,9 @@
   "license": "MIT",
   "author": "YasogaN",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
