@@ -42,8 +42,9 @@ describe("live response contract", () => {
     const withResponse = reviews.filter(
       review => Array.isArray(review) && Array.isArray(review[4]) && typeof review[4][2] === "string",
     );
-    // If this ever drops to zero the place may simply have no replies, so this
-    // is informational rather than a hard failure.
-    expect(Array.isArray(withResponse)).toBe(true);
+    // The selected place is documented to have owner replies, so an empty result
+    // means Google moved the response field or stopped returning owner responses
+    // rather than there simply being none to show.
+    expect(withResponse.length).toBeGreaterThan(0);
   });
 });
