@@ -13,6 +13,7 @@ jobs:
   live:
     name: Live endpoint tests
     runs-on: self-hosted
+    timeout-minutes: 120
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
