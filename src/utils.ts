@@ -7,7 +7,7 @@ import { SortEnum, type FetchReviewsParams, type JsonArray, type PaginateReviews
  *
  * @param options           - The parameters to validate.
  * @param options.url       - The Google Maps URL (must be on `google.com` or a subdomain).
- * @param options.sort_type - Sort order key that must exist in `SortEnum`.
+ * @param options.sort_type - Sort order name key that resolves to a numeric `SortEnum` value.
  * @param options.pages     - Number of pages (must be a number).
  * @param options.clean     - Whether to return parsed reviews (must be boolean).
  * @throws {Error} If any parameter is invalid.
@@ -27,8 +27,14 @@ export function validateParams({ url, sort_type, pages, clean }: Validate) {
     throw new Error(`Invalid host: ${host}`);
   }
 
-  if (!Object.hasOwn(SortEnum, sort_type)) {
-    throw new Error(`Invalid sort type: ${sort_type}. Expected: ${Object.keys(SortEnum).join(", ")}`);
+  // Numeric TypeScript enums emit a reverse mapping, so `SortEnum` also has the
+  // keys "1"-"4" whose values are the *name* strings. Resolving the value and
+  // requiring a number rejects those reverse keys (and inherited keys) rather
+  // than accepting mere key presence.
+  const sortValue = SortEnum[sort_type as keyof typeof SortEnum];
+  if (typeof sortValue !== "number") {
+    const validSortTypes = Object.keys(SortEnum).filter((key) => Number.isNaN(Number(key)));
+    throw new Error(`Invalid sort type: ${sort_type}. Expected: ${validSortTypes.join(", ")}`);
   }
 
   if (Number.isNaN(pages)) {
