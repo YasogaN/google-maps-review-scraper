@@ -8,8 +8,9 @@ permissions:
   contents: read
 
 concurrency:
-  # A push and a pull_request for the same branch would otherwise both run.
-  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  # Event name is part of the group so push and pull_request runs can never
+  # cancel each other (see #57).
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -17,25 +18,104 @@ jobs:
     name: Unit & integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 120
+    permissions:
+      contents: read
+      # Required to look up the open pull requests covering a pushed branch.
+      pull-requests: read
+      # Required to write the outcome onto the job's own check run.
+      checks: write
     steps:
+      # A push and a pull_request both fire when a branch has an open pull
+      # request. The pull_request run takes priority, so a push already covered
+      # by an open pull request only records the decision and skips the test
+      # steps. The job still reports success, and the decision is written to the
+      # run summary so the skipped work is explained on the run itself.
+      - name: Decide whether to run tests
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=true
+          reason="No open pull request covers this branch."
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            branch="${GITHUB_REF#refs/heads/}"
+            # `gh pr list --head` does not accept the `owner:branch` form, and a
+            # fork pull request can share the branch name, so match by branch and
+            # keep only same-repository pull requests.
+            prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
+              --head "$branch" --state open \
+              --json number,isCrossRepository \
+              --jq '[.[] | select(.isCrossRepository == false)] | length')"
+            if [ "$prs" -gt 0 ]; then
+              run=false
+              reason="An open pull request for ${branch} takes priority over this push run."
+            fi
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Unit & integration tests"
+            echo
+            if [ "$run" = "true" ]; then
+              echo ":white_check_mark: **Ran** - ${reason}"
+            else
+              echo ":fast_forward: **Skipped** - ${reason}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$run" = "false" ]; then
+            echo "::notice title=Unit & integration tests skipped::${reason}"
+          fi
+
       - name: Checkout code
+        if: steps.gate.outputs.run == 'true'
         uses: actions/checkout@v4
 
       - name: Setup Node
+        if: steps.gate.outputs.run == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
       - name: Setup pnpm
+        if: steps.gate.outputs.run == 'true'
         uses: pnpm/action-setup@v3
         with:
           version: 10
 
       - name: Install dependencies
+        if: steps.gate.outputs.run == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Typecheck
+        if: steps.gate.outputs.run == 'true'
         run: pnpm run typecheck
 
       - name: Run unit & integration tests with coverage
+        if: steps.gate.outputs.run == 'true'
         run: pnpm run test:coverage
+
+      # GitHub Actions job checks have no description by default. Write a short
+      # title/summary onto the job's own check run so the pull request checks
+      # list shows whether the tests ran, were skipped, or failed.
+      - name: Report check summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.gate.outputs.run }}" != "true" ]; then
+            title="Skipped - covered by an open pull request"
+            summary="The pull_request run takes priority for this branch, so this push run skipped the tests."
+          elif [ "${{ job.status }}" = "success" ]; then
+            title="Passed"
+            summary="Unit and integration tests passed with coverage."
+          else
+            title="Failed"
+            summary="Unit and integration tests did not pass; see the job logs."
+          fi
+          check_url="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" \
+            --jq '.jobs[] | select(.name == "Unit & integration tests") | .check_run_url')"
+          if ! gh api -X PATCH "${check_url#https://api.github.com/}" --input - <<JSON
+          {"output":{"title":"${title}","summary":"${summary}"}}
+          JSON
+          then
+            echo "::warning::Could not update the check run summary."
+          fi

@@ -1,0 +1,130 @@
+name: CodeQL
+
+on:
+  # Scan every branch on push. If the branch already has an open pull request
+  # targeting main, the pull_request run takes priority and this push run skips
+  # the analysis so the change is not analyzed twice.
+  push:
+  # Scan every change proposed for main or dev, including pull requests from
+  # forks.
+  pull_request:
+    branches: [main, dev]
+  # Re-scan the default branch weekly to catch newly published queries.
+  schedule:
+    # Every Monday at 00:00 UTC.
+    - cron: "0 0 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  # Event name is part of the group so push and pull_request runs can never
+  # cancel each other (see #57).
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (javascript-typescript)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      # Required to upload the analysis results to GitHub code scanning.
+      security-events: write
+      # Required to look up the open pull requests covering a pushed branch.
+      pull-requests: read
+      # Required to write the outcome onto the job's own check run.
+      checks: write
+      # Required to fetch internal or private CodeQL packs.
+      packages: read
+      # Required for all workflows.
+      actions: read
+      contents: read
+    steps:
+      # A push and a pull_request both fire when a branch has an open pull
+      # request. The pull_request run takes priority, so a push already covered
+      # by an open pull request only records the decision and skips the analysis.
+      # The job still reports success, and the decision is written to the run
+      # summary so the skipped work is explained on the run itself.
+      - name: Decide whether to analyze
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=true
+          reason="No open pull request targeting main or dev covers this branch."
+          if [ "${GITHUB_EVENT_NAME}" = "push" ]; then
+            branch="${GITHUB_REF#refs/heads/}"
+            # `gh pr list --head` does not accept the `owner:branch` form, and a
+            # fork pull request can share the branch name, so match by branch,
+            # keep only same-repository pull requests, and only count those
+            # targeting a branch CodeQL runs on.
+            prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
+              --head "$branch" --state open \
+              --json number,isCrossRepository,baseRefName \
+              --jq '[.[] | select(.isCrossRepository == false and (.baseRefName == "main" or .baseRefName == "dev"))] | length')"
+            if [ "$prs" -gt 0 ]; then
+              run=false
+              reason="An open pull request targeting main or dev for ${branch} takes priority over this push run."
+            fi
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          {
+            echo "## CodeQL"
+            echo
+            if [ "$run" = "true" ]; then
+              echo ":white_check_mark: **Ran** - ${reason}"
+            else
+              echo ":fast_forward: **Skipped** - ${reason}"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$run" = "false" ]; then
+            echo "::notice title=CodeQL skipped::${reason}"
+          fi
+
+      - name: Checkout repository
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        if: steps.gate.outputs.run == 'true'
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          # `security-extended` adds deeper security queries; `security-and-quality`
+          # additionally enables maintainability and reliability checks.
+          queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL analysis
+        if: steps.gate.outputs.run == 'true'
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript-typescript"
+
+      # GitHub Actions job checks have no description by default. Write a short
+      # title/summary onto the job's own check run so the pull request checks
+      # list shows whether the analysis ran, was skipped, or failed.
+      - name: Report check summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.gate.outputs.run }}" != "true" ]; then
+            title="Skipped - covered by an open pull request"
+            summary="The pull_request run takes priority for this branch, so this push run skipped the CodeQL analysis."
+          elif [ "${{ job.status }}" = "success" ]; then
+            title="Passed"
+            summary="CodeQL analyzed the JavaScript/TypeScript sources."
+          else
+            title="Failed"
+            summary="CodeQL analysis did not complete successfully; see the job logs."
+          fi
+          check_url="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" \
+            --jq '.jobs[] | select(.name == "Analyze (javascript-typescript)") | .check_run_url')"
+          if ! gh api -X PATCH "${check_url#https://api.github.com/}" --input - <<JSON
+          {"output":{"title":"${title}","summary":"${summary}"}}
+          JSON
+          then
+            echo "::warning::Could not update the check run summary."
+          fi
