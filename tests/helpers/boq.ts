@@ -68,11 +68,6 @@ export function validReview(id = "r1"): unknown[] {
   ];
 }
 
-/** A minimal owner response array: [?, time, text, ...]. */
-export function responseElement(text = "Thanks for visiting", published: unknown = "1 day ago"): unknown[] {
-  return [null, published, text, null, "English"];
-}
-
 /** Build the parsed `data` array shape consumed by `extractPage`. */
 export function makePage(reviews: unknown[], nextToken?: string): unknown[] {
   const node: unknown[] = [null, null, reviews];
