@@ -23,10 +23,25 @@ describe("validateParams", () => {
     expect(() => validateParams({ ...VALID_PARAMS, pages: -1 })).not.toThrow();
   });
 
-  it("rejects non-google hosts", () => {
-    expect(() => validateParams({ ...VALID_PARAMS, url: "https://example.com" })).toThrow(
-      /Invalid host/,
-    );
+  it("accepts the google.com apex and its subdomains", () => {
+    for (const url of [
+      "https://google.com/maps/place/x",
+      "https://www.google.com/maps/place/x",
+      "https://maps.google.com/maps/place/x",
+    ]) {
+      expect(() => validateParams({ ...VALID_PARAMS, url })).not.toThrow();
+    }
+  });
+
+  it("rejects non-google hosts with a host-specific error", () => {
+    for (const url of [
+      "https://example.com",
+      "https://evilgoogle.com",
+      "https://notgoogle.com",
+      "https://google.com.evil.com",
+    ]) {
+      expect(() => validateParams({ ...VALID_PARAMS, url })).toThrow(/Invalid host/);
+    }
   });
 
   it("rejects malformed urls", () => {
