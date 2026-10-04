@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { scraper } from "../../src/index.js";
 import { contractViolations, schemaViolations, type BoqSchema } from "../helpers/contract.js";
 import { LIVE_PLACE_URL } from "../helpers/live.js";
@@ -17,7 +17,7 @@ const schema = JSON.parse(
   readFileSync(new URL("../fixtures/boq-schema.json", import.meta.url), "utf8"),
 ) as BoqSchema;
 
-async function liveReviews(): Promise<unknown[]> {
+async function fetchLiveReviews(): Promise<unknown[]> {
   return (await scraper({
     url: LIVE_PLACE_URL,
     sort_type: "newest",
@@ -27,18 +27,23 @@ async function liveReviews(): Promise<unknown[]> {
 }
 
 describe("live response contract", () => {
-  it("matches the committed response schema", async () => {
-    const problems = schemaViolations(await liveReviews(), schema);
+  let reviews: unknown[] = [];
+
+  beforeAll(async () => {
+    reviews = await fetchLiveReviews();
+  });
+
+  it("matches the committed response schema", () => {
+    const problems = schemaViolations(reviews, schema);
     expect(problems, `Response schema changed:\n${problems.join("\n")}`).toEqual([]);
   });
 
-  it("satisfies the parser's structural assumptions", async () => {
-    const problems = contractViolations(await liveReviews());
+  it("satisfies the parser's structural assumptions", () => {
+    const problems = contractViolations(reviews);
     expect(problems, `Response contract changed:\n${problems.join("\n")}`).toEqual([]);
   });
 
-  it("still exposes owner responses in the raw payload", async () => {
-    const reviews = await liveReviews();
+  it("still exposes owner responses in the raw payload", () => {
     const withResponse = reviews.filter(
       review => Array.isArray(review) && Array.isArray(review[4]) && typeof review[4][2] === "string",
     );
