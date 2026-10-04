@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
   id-token: write
 
 jobs:
@@ -37,12 +36,6 @@ jobs:
 
       - name: Publish to npm
         run: pnpm publish --access public --no-git-checks --provenance
-
-      - name: Setup Node for GitHub Packages
-        uses: actions/setup-node@v4
-        with:
-          node-version: "26"
-          registry-url: "https://npm.pkg.github.com"
 
       # --- 2. CREATE GITHUB RELEASE ---
       - name: Create GitHub Release
