@@ -1,0 +1,12 @@
+{
+  // Type-checks the test suite alongside the source. `tsconfig.json` only
+  // includes `src`, and Vitest strips types via esbuild, so without this config
+  // type errors in tests (or source) would never fail CI.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "declaration": false
+  },
+  "include": ["src/**/*", "tests/**/*", "vitest.config.ts"]
+}

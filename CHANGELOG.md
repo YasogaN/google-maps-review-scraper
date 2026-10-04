@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-10-04
+
+### Added
+
+- Owner responses are now included in the cleaned output (`clean: true`)
+- Vitest test suites: deterministic `tests/unit` and `tests/integration` suites plus network-dependent `tests/live` tests, with shared fixtures and builders
+- Scheduled live contract detection that compares the undocumented BOQ response against the committed `tests/fixtures/boq-schema.json`
+- CodeQL code scanning for JavaScript/TypeScript on pushes, pull requests targeting `main` and `dev`, and a weekly schedule
+
+### Changed
+
+- Node.js support now targets Node 26 LTS; CI runs the test suite on Node 22, 24, and 26 and typechecks each runtime against its matching `@types/node`
+- Added `engines.node` (`>=22.12.0`); Node.js 20 and older are no longer supported
+- CI now typechecks the source and tests and enforces 100% coverage on statements, branches, functions, and lines
+- CI lets a `pull_request` run take priority over a duplicate `push` run and reports skipped gates with an explanatory check summary
+- Release workflow builds the artifact on the pinned Node and no longer configures GitHub Packages
+
+### Fixed
+
+- `validateParams` rejects numeric enum reverse-mapping keys (`"1"`–`"4"`) as `sort_type`
+- `validateParams` rejects inherited object keys (`toString`, `constructor`, `__proto__`, ...) as `sort_type`
+- `validateParams` rejects spoofed `google.com` hosts (e.g. `evilgoogle.com`, `google.com.evil.com`) while accepting fully-qualified hostnames with a trailing dot
+- Owner responses that are absent are returned as `null`, and their timestamp is parsed
+- Corrected the `sort_type` value in the `scraper` JSDoc and the host requirement documented for `validateParams`
+
+### Removed
+
+- Unused `tsx` and `rimraf` dev dependencies; the build clean step now uses `scripts/clean.mjs`
+- Unused GitHub Packages publishing setup and `packages: write` permission from the release workflow
+
+### Docs
+
+- Updated the `CONTRIBUTING.md` test commands and replaced the stale lint step with the type check CI enforces
+
 ## [3.0.0] - 2026-07-05
 
 ### Changed

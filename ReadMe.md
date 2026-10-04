@@ -56,7 +56,7 @@ All arguments are passed as a single object:
 
 `sort_type` - `string`: Sort order (`"relevant"`, `"newest"`, `"highest_rating"`, `"lowest_rating"`). Defaults to `"relevant"`.
 
-`pages` - `number`: Number of pages to scrape (each page yields ~10 reviews). Defaults to all available pages. Set to `-1` for unlimited.
+`pages` - `number`: Number of pages to scrape (each page yields ~10 reviews). Defaults to all available pages. Set to `-1` for unlimited. To capture all reviews, use the `"newest"` sort order and unlimited pages.
 
 `clean` - `boolean`: Whether to return a cleaned/parsed output (`ParsedReview[]`) or raw JSON (`JsonArray`). Defaults to `false`.
 
