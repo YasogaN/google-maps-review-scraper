@@ -68,6 +68,14 @@ describe("validateParams", () => {
     }
   });
 
+  it("rejects numeric enum keys as sort types", () => {
+    for (const sort_type of ["1", "2", "3", "4"]) {
+      expect(() => validateParams({ ...VALID_PARAMS, sort_type })).toThrow(
+        /Invalid sort type/,
+      );
+    }
+  });
+
   it("rejects NaN page counts", () => {
     expect(() => validateParams({ ...VALID_PARAMS, pages: Number.NaN })).toThrow(
       /Invalid pages value/,
