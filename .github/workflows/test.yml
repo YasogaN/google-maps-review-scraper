@@ -92,9 +92,16 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Typecheck
+      # The published type definitions target Node 26. For the older runtimes,
+      # swap in that line's @types/node before typechecking so APIs added after
+      # the supported floor fail at compile time rather than only at runtime.
+      - name: Typecheck against Node ${{ matrix.node-version }} types
         if: steps.gate.outputs.run == 'true'
-        run: pnpm run typecheck
+        run: |
+          if [ "${{ matrix.node-version }}" != "26" ]; then
+            pnpm add --save-dev "@types/node@${{ matrix.node-version }}"
+          fi
+          pnpm run typecheck
 
       - name: Run unit & integration tests with coverage
         if: steps.gate.outputs.run == 'true'
