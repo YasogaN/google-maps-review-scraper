@@ -74,6 +74,9 @@ jobs:
               echo ":fast_forward: **Skipped** - ${reason}"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$run" = "false" ]; then
+            echo "::notice title=CodeQL skipped::${reason}"
+          fi
 
       - name: Checkout repository
         if: steps.gate.outputs.run == 'true'
