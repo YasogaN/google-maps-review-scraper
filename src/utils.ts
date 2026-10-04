@@ -6,20 +6,25 @@ import { SortEnum, type FetchReviewsParams, type JsonArray, type PaginateReviews
  * Validate scraper input parameters, throwing on invalid values.
  *
  * @param options           - The parameters to validate.
- * @param options.url       - The Google Maps URL (must contain "google.com").
+ * @param options.url       - The Google Maps URL (must be on `google.com` or a subdomain).
  * @param options.sort_type - Sort order key that must exist in `SortEnum`.
  * @param options.pages     - Number of pages (must be a number).
  * @param options.clean     - Whether to return parsed reviews (must be boolean).
  * @throws {Error} If any parameter is invalid.
  */
 export function validateParams({ url, sort_type, pages, clean }: Validate) {
+  let parsedUrl: URL;
   try {
-    const parsedUrl = new URL(url);
-    if (!parsedUrl.host.includes("google.com")) {
-      throw new Error(`Invalid host: ${parsedUrl.host}`);
-    }
-  } catch (e) {
+    parsedUrl = new URL(url);
+  } catch {
     throw new Error(`Invalid URL format: ${url}`);
+  }
+
+  // A trailing dot denotes the DNS root (e.g. "www.google.com."), so strip one
+  // optional dot to treat fully-qualified hostnames the same as their normal form.
+  const host = parsedUrl.hostname.replace(/\.$/, "");
+  if (host !== "google.com" && !host.endsWith(".google.com")) {
+    throw new Error(`Invalid host: ${host}`);
   }
 
   if (!Object.hasOwn(SortEnum, sort_type)) {
