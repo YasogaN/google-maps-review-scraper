@@ -1,0 +1,92 @@
+name: CodeQL
+
+on:
+  # Scan every branch on push. If the branch already has an open pull request
+  # targeting main, the pull_request run takes priority and the analyze job
+  # below is skipped so the change is not analyzed twice.
+  push:
+  # Scan every change proposed for main, including pull requests from forks.
+  pull_request:
+    branches: [main]
+  # Re-scan the default branch weekly to catch newly published queries.
+  schedule:
+    # Every Monday at 00:00 UTC.
+    - cron: "0 0 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  # Event name is part of the group so push and pull_request runs can never
+  # cancel each other (see #57).
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  # A push and a pull_request both fire when a branch has an open pull request.
+  # This job decides who analyzes: the pull_request run always wins, so a push
+  # covered by an open pull request to main is asked to skip.
+  gate:
+    name: Check for an open pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      # Required to look up the open pull requests covering a pushed branch.
+      pull-requests: read
+    outputs:
+      run: ${{ steps.check.outputs.run }}
+    steps:
+      - name: Decide whether to analyze
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" != "push" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="${GITHUB_REF#refs/heads/}"
+          prs="$(gh pr list --repo "$GITHUB_REPOSITORY" \
+            --head "${GITHUB_REPOSITORY_OWNER}:${branch}" \
+            --base main --state open --json number --jq 'length')"
+          if [ "$prs" -gt 0 ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=CodeQL skipped::An open pull request for ${branch} takes priority over the push run."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  analyze:
+    name: Analyze (javascript-typescript)
+    needs: gate
+    # When the gate reports false this job is skipped, so the run shows as
+    # neutral instead of a passing check that did no analysis.
+    if: needs.gate.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      # Required to upload the analysis results to GitHub code scanning.
+      security-events: write
+      # Required to fetch internal or private CodeQL packs.
+      packages: read
+      # Required for all workflows.
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          build-mode: none
+          # `security-extended` adds deeper security queries; `security-and-quality`
+          # additionally enables maintainability and reliability checks.
+          queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:javascript-typescript"
