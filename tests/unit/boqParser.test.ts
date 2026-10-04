@@ -135,7 +135,7 @@ describe("boqParser", () => {
     expect(parsed!.review.text).toBe("Full review text");
   });
 
-  it("returns null images when no image candidates are present", () => {
+  it("skips empty and non-array image holders and finds later candidates", () => {
     const review = makeReview({
       6: [],
       7: "not an array",
