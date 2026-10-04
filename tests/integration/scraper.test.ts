@@ -4,17 +4,23 @@ vi.mock("../../src/utils.js", async importOriginal => {
   const actual = await importOriginal<typeof import("../../src/utils.js")>();
   return { ...actual, paginateReviews: vi.fn() };
 });
+vi.mock("../../src/client.js", () => ({
+  createClient: vi.fn(() => ({ fetch: vi.fn() })),
+}));
 
 import { scraper } from "../../src/index.js";
 import { paginateReviews } from "../../src/utils.js";
+import { createClient } from "../../src/client.js";
 
 const mockPaginate = vi.mocked(paginateReviews);
+const mockCreateClient = vi.mocked(createClient);
 
 const URL_ONE = "https://www.google.com/maps/place/x/data=!3m1!1s0xAAA:0xBBB!9z";
 const URL_TWO = "https://www.google.com/maps/place/x/data=!4m2!1sFIRST!4m2!1sSECOND!9z";
 
 beforeEach(() => {
   mockPaginate.mockReset();
+  mockCreateClient.mockClear();
 });
 
 describe("scraper", () => {
@@ -43,13 +49,15 @@ describe("scraper", () => {
     expect(await scraper({ url: URL_ONE })).toEqual([]);
   });
 
-  it("forwards proxy configuration", async () => {
+  it("forwards proxy configuration to the client", async () => {
     mockPaginate.mockResolvedValueOnce([]);
     await scraper({
       url: URL_ONE,
       proxy: { proxyUrl: "http://proxy:8080", ignoreTls: true },
     });
-    expect(mockPaginate).toHaveBeenCalledTimes(1);
+    expect(mockCreateClient).toHaveBeenCalledWith({
+      proxy: { url: "http://proxy:8080", tls: true },
+    });
   });
 
   it("wraps validation errors", async () => {
