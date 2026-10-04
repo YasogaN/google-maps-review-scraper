@@ -22,6 +22,8 @@ jobs:
       contents: read
       # Required to look up the open pull requests covering a pushed branch.
       pull-requests: read
+      # Required to write the outcome onto the job's own check run.
+      checks: write
     steps:
       # A push and a pull_request both fire when a branch has an open pull
       # request. The pull_request run takes priority, so a push already covered
@@ -90,3 +92,30 @@ jobs:
       - name: Run unit & integration tests with coverage
         if: steps.gate.outputs.run == 'true'
         run: pnpm run test:coverage
+
+      # GitHub Actions job checks have no description by default. Write a short
+      # title/summary onto the job's own check run so the pull request checks
+      # list shows whether the tests ran, were skipped, or failed.
+      - name: Report check summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ steps.gate.outputs.run }}" != "true" ]; then
+            title="Skipped - covered by an open pull request"
+            summary="The pull_request run takes priority for this branch, so this push run skipped the tests."
+          elif [ "${{ job.status }}" = "success" ]; then
+            title="Passed"
+            summary="Unit and integration tests passed with coverage."
+          else
+            title="Failed"
+            summary="Unit and integration tests did not pass; see the job logs."
+          fi
+          check_url="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/jobs" \
+            --jq '.jobs[] | select(.name == "Unit & integration tests") | .check_run_url')"
+          if ! gh api -X PATCH "${check_url#https://api.github.com/}" --input - <<JSON
+          {"output":{"title":"${title}","summary":"${summary}"}}
+          JSON
+          then
+            echo "::warning::Could not update the check run summary."
+          fi
