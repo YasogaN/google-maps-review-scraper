@@ -19,6 +19,7 @@
   ],
   "scripts": {
     "build": "node scripts/clean.mjs && tsc",
+    "typecheck": "tsc -p tsconfig.test.json",
     "test": "vitest run tests/unit tests/integration",
     "test:unit": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration",
