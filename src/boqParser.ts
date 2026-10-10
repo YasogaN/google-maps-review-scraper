@@ -2,6 +2,29 @@ import { getPath, numberOrZero, stringOrDefault, stringOrEmpty, stringOrNull } f
 import type { ParsedReview } from "./types.js";
 
 /**
+ * Check whether a URL is hosted on `gstatic.com` or one of its subdomains.
+ *
+ * The URL is parsed and its host inspected rather than substring-matched, so
+ * unrelated hosts that merely contain `gstatic.com` elsewhere in the string
+ * (for example `https://notgstatic.com/x` or `https://evil.example/?x=gstatic.com`)
+ * are not mistaken for real `gstatic.com` URLs.
+ *
+ * @param url The candidate URL, which may be protocol-relative (`//host/path`).
+ * @returns `true` if the parsed host is `gstatic.com` or a subdomain of it.
+ */
+function _isGstaticUrl(url: string): boolean {
+    let hostname: string;
+    try {
+        // A base is required to parse protocol-relative URLs; it never has to
+        // match the candidate host, only satisfy the URL parser.
+        hostname = new URL(url, "https://localhost").hostname;
+    } catch {
+        return false;
+    }
+    return hostname === "gstatic.com" || hostname.endsWith(".gstatic.com");
+}
+
+/**
  * Check whether a raw array item represents a candidate image URL.
  *
  * @param item The raw array element to inspect.
@@ -10,7 +33,7 @@ import type { ParsedReview } from "./types.js";
 function _isImageCandidate(item: unknown): boolean {
     if (!Array.isArray(item) || typeof item[0] !== "string") return false;
     if (item[0].includes("googleusercontent")) return true;
-    return (item[0].startsWith("//") || item[0].startsWith("http")) && !item[0].includes("gstatic.com");
+    return (item[0].startsWith("//") || item[0].startsWith("http")) && !_isGstaticUrl(item[0]);
 }
 
 /**
