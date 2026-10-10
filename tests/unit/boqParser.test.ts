@@ -180,6 +180,23 @@ describe("boqParser", () => {
     ]);
   });
 
+  it("excludes fully-qualified gstatic hostnames with a trailing dot", () => {
+    const review = makeReview({
+      6: [
+        ["https://gstatic.com./icon", "c", null, "static-fqdn-root"],
+        ["https://maps.gstatic.com./icon", "c", null, "static-fqdn-sub"],
+        ["//maps.gstatic.com./icon", "c", null, "static-fqdn-relative"],
+        ["https://notgstatic.com./photo", "c", null, "not-static-fqdn"],
+        ["https://gstatic.com.evil.example./photo", "c", null, "static-spoof-fqdn"],
+      ],
+    });
+    const [parsed] = boqParser([review]);
+    expect(parsed!.images!.map(image => image.id)).toEqual([
+      "not-static-fqdn",
+      "static-spoof-fqdn",
+    ]);
+  });
+
   it("keeps an http-prefixed URL that cannot be parsed", () => {
     const review = makeReview({
       6: [["http://", "c", null, "unparseable"]],
