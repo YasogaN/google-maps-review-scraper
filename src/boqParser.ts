@@ -21,6 +21,10 @@ function _isGstaticUrl(url: string): boolean {
     } catch {
         return false;
     }
+    // A trailing dot denotes the DNS root (e.g. "maps.gstatic.com."), so strip
+    // one optional dot to treat fully-qualified hostnames the same as their
+    // normal form.
+    hostname = hostname.replace(/\.$/, "");
     return hostname === "gstatic.com" || hostname.endsWith(".gstatic.com");
 }
 
