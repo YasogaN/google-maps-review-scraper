@@ -160,6 +160,51 @@ describe("boqParser", () => {
     expect(parsed!.images).toBeNull();
   });
 
+  it("excludes gstatic hosts by hostname instead of substring match", () => {
+    const review = makeReview({
+      6: [
+        ["https://gstatic.com/icon", "c", null, "static-root"],
+        ["//gstatic.com/icon", "c", null, "static-relative"],
+        ["https://GSTATIC.COM/icon", "c", null, "static-upper"],
+        ["https://maps.gstatic.com/icon", "c", null, "static-sub"],
+        ["https://notgstatic.com/photo", "c", null, "not-static"],
+        ["https://gstatic.com.evil.example/photo", "c", null, "static-spoof"],
+        ["https://evil.example/?x=gstatic.com", "c", null, "query-embed"],
+      ],
+    });
+    const [parsed] = boqParser([review]);
+    expect(parsed!.images!.map(image => image.id)).toEqual([
+      "not-static",
+      "static-spoof",
+      "query-embed",
+    ]);
+  });
+
+  it("excludes fully-qualified gstatic hostnames with a trailing dot", () => {
+    const review = makeReview({
+      6: [
+        ["https://gstatic.com./icon", "c", null, "static-fqdn-root"],
+        ["https://maps.gstatic.com./icon", "c", null, "static-fqdn-sub"],
+        ["//maps.gstatic.com./icon", "c", null, "static-fqdn-relative"],
+        ["https://notgstatic.com./photo", "c", null, "not-static-fqdn"],
+        ["https://gstatic.com.evil.example./photo", "c", null, "static-spoof-fqdn"],
+      ],
+    });
+    const [parsed] = boqParser([review]);
+    expect(parsed!.images!.map(image => image.id)).toEqual([
+      "not-static-fqdn",
+      "static-spoof-fqdn",
+    ]);
+  });
+
+  it("keeps an http-prefixed URL that cannot be parsed", () => {
+    const review = makeReview({
+      6: [["http://", "c", null, "unparseable"]],
+    });
+    const [parsed] = boqParser([review]);
+    expect(parsed!.images!.map(image => image.id)).toEqual(["unparseable"]);
+  });
+
   it("parses multiple reviews and discards invalid ones", () => {
     const result = boqParser([makeReview(), null, makeReview({ 5: "review-2" })]);
     expect(result).toHaveLength(2);
